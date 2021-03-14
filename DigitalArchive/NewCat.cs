@@ -38,8 +38,8 @@ namespace DigitalArchive
                     //check the chosen directory is OK
                     DirectoryInfo di = new DirectoryInfo(txtFilePath.Text);
                     if (di.Exists) bDir = true;
-                    if (txtCatName.TextLength > 5) bName = true;
-                    if (txtCatDesc.TextLength > 10) bDesc = true;
+                    if (txtCatName.TextLength > 5 && txtCatName.TextLength < 121) bName = true;
+                    if (txtCatDesc.TextLength > 10 && txtCatDesc.TextLength < 256) bDesc = true;
 
                     if (dlgResult == DialogResult.Yes && bDir == true && bName == true && bDesc == true)
                     {
@@ -108,14 +108,15 @@ namespace DigitalArchive
 
                         // update info on screen
                         lblGuid.Text = "Catalogue " + CatUUID + " has been created";
-                        Main frm = new Main();
-                        frm.LabelCurrentCat = "Current Catalogue: " + txtCatName.Text;
+
+                        MainForm frm = new MainForm();
+                        frm.LabelCurrentCat = "Current Catalogue: " + txtCatName.Text; ;
                         //close form
                         this.Close();
                     }
                     else
                     {
-                        lblGuid.Text = "you must chose a location and enter a name > 5 charaters and description > 10 characters";
+                        lblGuid.Text = "You must choose a location for the catalogue and enter a name between 5 and 120 characters and description between 10 and 255 characters";
                     }
 
                 }
@@ -140,20 +141,6 @@ namespace DigitalArchive
                 }
                 conn.Close();
             }
-
-            /*
-            SQLiteCommand sql_cmd;
-            sql_cmd = conn.CreateCommand();
-            sql_cmd.CommandText = sqlu + sqli;
-            sql_cmd.ExecuteNonQuery();
-            */
-
-            /*
-            SQLiteDataReader sqlite_datareader;
-            SQLiteCommand sqlite_cmd;
-            sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "SELECT * FROM SampleTable";
-            */
         }
 
         private void txtFilePath_TextChanged(object sender, EventArgs e)
@@ -212,6 +199,11 @@ namespace DigitalArchive
         {
             txtFilePath.Text = GetCatalogueLoc();
 
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

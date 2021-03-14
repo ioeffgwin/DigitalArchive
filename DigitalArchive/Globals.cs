@@ -16,6 +16,7 @@ namespace DigitalArchive
         public static string curCatUUID;
         public static string curCatName;
         public static string curCatDesc;
+        public static string[] OpenArgs;
         public static string connApp = "Data Source=digarch.dacat; Version = 3; ";
         public static string connCat = "Data Source=" + Globals.curCatUUID + "; Version = 3; ";
 

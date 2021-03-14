@@ -27,42 +27,46 @@ namespace DigitalArchive
             //get details of current catalogue to use 
 
             if (File.Exists(catPath))
-            {
-
-               
-            try
-            {
-                string sql = "SELECT catName, catUUID, catCreated, catDesc, catVersion, catLastUpdate FROM tblCatalogue LIMIT 1";
-                SQLiteConnection cat_Conn = new SQLiteConnection("Data Source=" + catPath + "; Version = 3; Compress = True;");
-                cat_Conn.Open();
-                SQLiteDataReader sqlRead;
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_Conn.CreateCommand();
-                sql_cmd.CommandText = sql;
-
-                sqlRead = sql_cmd.ExecuteReader();
-                while (sqlRead.Read())
                 {
-                    this.catUUID = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
-                    this.catName = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
-                    this.catDesc = sqlRead.GetString(sqlRead.GetOrdinal("catDesc"));
-                    this.catVer = sqlRead.GetString(sqlRead.GetOrdinal("catVersion"));
-                    this.catDateCreated = sqlRead.GetString(sqlRead.GetOrdinal("catCreated"));
-                    this.catDateLastUpdate = sqlRead.GetString(sqlRead.GetOrdinal("catLastUpdate"));
+                try
+                {
+                    string sql = "SELECT catName, catUUID, catCreated, catDesc, catVersion, catLastUpdate FROM tblCatalogue LIMIT 1";
+                    SQLiteConnection cat_Conn = new SQLiteConnection("Data Source=" + catPath + "; Version = 3; Compress = True;");
+                    cat_Conn.Open();
+                    SQLiteDataReader sqlRead;
+                    SQLiteCommand sql_cmd;
+                    sql_cmd = cat_Conn.CreateCommand();
+                    sql_cmd.CommandText = sql;
+
+                    sqlRead = sql_cmd.ExecuteReader();
+                    while (sqlRead.Read())
+                    {
+                        this.catUUID = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
+                        this.catName = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
+                        this.catDesc = sqlRead.GetString(sqlRead.GetOrdinal("catDesc"));
+                        this.catVer = sqlRead.GetString(sqlRead.GetOrdinal("catVersion"));
+                        this.catDateCreated = sqlRead.GetString(sqlRead.GetOrdinal("catCreated"));
+                        this.catDateLastUpdate = sqlRead.GetString(sqlRead.GetOrdinal("catLastUpdate"));
+                    }
+                    cat_Conn.Close();
                 }
-                cat_Conn.Close();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                Globals.curCatUUID = this.catUUID;
-                Globals.curCatName = this.catName;
-                Globals.curCatDesc = this.catDesc;
+                catch (Exception e)
+                {
+                    Globals.curCatName = "Catalogue not found.";
+                    throw e;
+                }
+                finally
+                {
+                    Globals.curCatUUID = this.catUUID;
+                    Globals.curCatName = this.catName;
+                    Globals.curCatDesc = this.catDesc;
                 
+                }
+
             }
+            else
+            {
+                Globals.curCatName = "Catalogue not found.";
 
             }
 

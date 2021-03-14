@@ -12,21 +12,31 @@ using System.Data.SQLite;
 
 namespace DigitalArchive
 {
-    public partial class Main : Form
+    public partial class MainForm : Form
     {
-        public Main()
+        public MainForm()
         {
             InitializeComponent();
 
+            toolStripMessage.Text = "";
             toolStripCurCat.Text = "No Catalogue opened";
             //add in code to read data from digarch.dacat
+            string curCatID;
             // if no data not used before some data required
+            if (Globals.OpenArgs.Length != 0)
+            {
+                curCatID = Globals.OpenArgs[0];
+            }
+            else
+            {
+                curCatID = GetLatestCatalogue();
+            }
 
-            string curCatID = GetLatestCatalogue();
-            if(curCatID!=null)
+
+            if (curCatID!=null)
             {
                 Catalogue curCat = new Catalogue(curCatID);
-                toolStripCurCat.Text = "Current Catalogue: " + curCat.catName;
+                toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
             }
 
             //get most 5 recent catalogues
@@ -37,8 +47,9 @@ namespace DigitalArchive
                 using (SQLiteCommand sql_cmd = new SQLiteCommand(sql, conn))
                 {
 
-                    var mnu = mnuStrip.Items[0];
+                    //var mnu = mnuStrip.Items[0];
                     MenuItem addDevice = new MenuItem("Previous Catalogues");
+                    ToolStripMenuItem recCur = openRecentToolStripMenuItem;
                     SQLiteDataReader sqlRead;
                     sqlRead = sql_cmd.ExecuteReader();
                     int i = 0;
@@ -48,9 +59,14 @@ namespace DigitalArchive
                         subItem[i] = new ToolStripMenuItem();
                         subItem[i].Name = "mnuPrevCat" + i.ToString();
                         subItem[i].Tag = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
-                        subItem[i].Text = sqlRead.GetString(sqlRead.GetOrdinal("catName")) + "|" + sqlRead.GetString(sqlRead.GetOrdinal("catDateOpened"));
-                        subItem[i].Click += new EventHandler(catPrevMenuItemClick);
-                     //   mnuStrip.Items.Add(subItem[i]); // this adds the stuff
+
+                        subItem[i].Text = sqlRead.GetString(sqlRead.GetOrdinal("catName")) + " | " + sqlRead.GetString(sqlRead.GetOrdinal("catDateOpened"));
+                        //subItem[i].Text = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
+                        string curID = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
+                        subItem[i].Click += delegate { CatPrevMenuItemClick(curID); };
+                       //subItem[i].Click += new EventHandler(CatPrevMenuItemClick(sqlRead.GetString(sqlRead.GetOrdinal("catUUID"))));
+                            
+                        recCur.DropDownItems.Add(subItem[i]); // this adds the stuff
                         i++;
                      
                         //if (!sqlRead.IsDBNull(0)) catName = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
@@ -64,9 +80,19 @@ namespace DigitalArchive
 
         }
 
-        private void catPrevMenuItemClick(object sender, EventArgs e)
+        protected void CatPrevMenuItemClick(string catID)
         {
-            
+            Catalogue curCat = new Catalogue(catID);
+            if(curCat.catName == null)
+            {
+                toolStripCurCat.Text = "Catalogue not found";
+            }
+            else
+            {
+                toolStripCurCat.Text = "Current Catalogue: " + curCat.catName;
+
+            }
+
         }
 
 
@@ -219,10 +245,49 @@ namespace DigitalArchive
 
         private void btnUsersName_Click(object sender, EventArgs e)
         {
-            // this needs a bit more validatyion etc
-            // update app tables
-            Globals.SetUserName(txtUsersName.Text);
-            toolStripUserName.Text = Globals.usersName;
+            try
+            {
+                this.toolStripMessage.Text = "User Name must be between 3 and 15 characters";
+
+                // this needs a bit more validatyion etc
+                if (txtUsersName.Text.Length > 2 && txtUsersName.Text.Length <16)
+                {
+
+
+                    Globals.SetUserName(txtUsersName.Text);
+                    toolStripUserName.Text = "User: " + Globals.usersName;
+                    // update app tables
+                    SQLiteConnection sys_Conn = new SQLiteConnection(Globals.connApp + " New = True; Compress = True; ");
+                    sys_Conn.Open();
+
+                    // update tblAppSystemb(no where clause as only one line should be in use)
+                    string sql = "UPDATE tblAppSystem SET username = '" + txtUsersName.Text + "';";
+                    SQLiteCommand command = new SQLiteCommand(sql, sys_Conn);
+                    command.ExecuteNonQuery();
+                    sys_Conn.Close();
+                    this.toolStripMessage.Text = "User Name updated";
+
+                }
+                else
+                {
+                    this.toolStripMessage.Text = "User Name must be between 3 and 15 characters";
+                }
+
+                this.lblUsersName.Visible = false;
+                this.txtUsersName.Visible = false;
+                this.btnUsersName.Visible = false;
+                this.btnCancelUsersName.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                this.lblUsersName.Visible = false;
+                this.txtUsersName.Visible = false;
+                this.btnUsersName.Visible = false;
+                this.btnCancelUsersName.Visible = false;
+
+
+                throw ex;
+            }
 
         }
 
@@ -247,7 +312,7 @@ namespace DigitalArchive
         private void addCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new NewCat().Show();
-
+         
         }
 
         private void openCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
@@ -272,6 +337,58 @@ namespace DigitalArchive
         private void button1_Click(object sender, EventArgs e)
         {
                     ReadFileInfo.ReadFiles();
+        }
+
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (System.Windows.Forms.Application.MessageLoop)
+            {
+                // WinForms app
+                System.Windows.Forms.Application.Exit();
+            }
+            else
+            {
+                // Console app
+                System.Environment.Exit(1);
+            }
+        }
+
+        private void openRecentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblUsersName_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void editUserNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.txtUsersName.Text = Globals.usersName;
+            this.lblUsersName.Visible = true;
+            this.txtUsersName.Visible = true;
+            this.btnUsersName.Visible = true;
+            this.btnCancelUsersName.Visible = true;
+            this.txtUsersName.Focus();
+            this.toolStripMessage.Text = "User Name must be between 3 and 15 characters";
+
+        }
+
+        private void btnCancelUsersName_Click(object sender, EventArgs e)
+        {
+            this.txtUsersName.Text = null;
+            this.lblUsersName.Visible = false;
+            this.txtUsersName.Visible = false;
+            this.btnUsersName.Visible = false;
+            this.btnCancelUsersName.Visible = false;
+            this.toolStripMessage.Text = "";
+
         }
     }
 }

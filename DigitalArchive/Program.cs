@@ -14,9 +14,11 @@ namespace DigitalArchive
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main( string[] args )
         {
-           
+
+            Globals.OpenArgs = args;
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //test to see if first use
@@ -48,7 +50,7 @@ namespace DigitalArchive
                 FirstUse(myName);
             }
 
-            Application.Run(new Main());
+            Application.Run(new MainForm());
 
         }
 

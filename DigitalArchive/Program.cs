@@ -73,14 +73,14 @@ namespace DigitalArchive
                 "); " +
                 "CREATE TABLE tblCatsOpened ( " +
                 "catsOpenedID  INTEGER    PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
-                "catUUID       TEXT (40)  NOT NULL, " +
+                "catUUID       TEXT (255)  NOT NULL, " +
                 "catName       TEXT (120) NOT NULL, " +
                 "catDateOpened DATE       NOT NULL, " +
                 "catPath       TEXT (255) NOT NULL " +
                 "); " +
                 "CREATE TABLE tblChangeLog ( " +
                 "logID         INTEGER      PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
-                "logCatUUID    TEXT (40)    NOT NULL, " +
+                "logCatUUID    TEXT (255)    NOT NULL, " +
                 "logItemID     INTEGER      NOT NULL, " +
                 "logDateTime   DATETIME     NOT NULL, " +
                 "logChangeDets TEXT (1024)  NOT NULL, " +

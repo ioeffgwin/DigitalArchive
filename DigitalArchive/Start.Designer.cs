@@ -30,93 +30,23 @@ namespace DigitalArchive
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.btnGetGuid = new System.Windows.Forms.Button();
-            this.lblGuid = new System.Windows.Forms.Label();
-            this.txtCatName = new System.Windows.Forms.TextBox();
-            this.txtCatDesc = new System.Windows.Forms.TextBox();
-            this.lblCatName = new System.Windows.Forms.Label();
-            this.lblCatDesc = new System.Windows.Forms.Label();
-            this.lblUserName = new System.Windows.Forms.Label();
-            this.lblCurrentCat = new System.Windows.Forms.Label();
             this.txtUsersName = new System.Windows.Forms.TextBox();
             this.lblUsersName = new System.Windows.Forms.Label();
             this.btnUsersName = new System.Windows.Forms.Button();
-            this.btnConnectCat = new System.Windows.Forms.Button();
+            this.lblGuid = new System.Windows.Forms.Label();
+            this.mnuStrip = new System.Windows.Forms.MenuStrip();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.addCatalogueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openCatalogueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripUserName = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripCurCat = new System.Windows.Forms.ToolStripStatusLabel();
+            this.mnuStrip.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnGetGuid
-            // 
-            this.btnGetGuid.Location = new System.Drawing.Point(159, 85);
-            this.btnGetGuid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnGetGuid.Name = "btnGetGuid";
-            this.btnGetGuid.Size = new System.Drawing.Size(201, 35);
-            this.btnGetGuid.TabIndex = 0;
-            this.btnGetGuid.Text = "Creat New Catalogue";
-            this.btnGetGuid.UseVisualStyleBackColor = true;
-            this.btnGetGuid.Click += new System.EventHandler(this.btnGetGuid_Click);
-            // 
-            // lblGuid
-            // 
-            this.lblGuid.AutoSize = true;
-            this.lblGuid.Location = new System.Drawing.Point(154, 263);
-            this.lblGuid.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblGuid.Name = "lblGuid";
-            this.lblGuid.Size = new System.Drawing.Size(0, 20);
-            this.lblGuid.TabIndex = 1;
-            // 
-            // txtCatName
-            // 
-            this.txtCatName.Location = new System.Drawing.Point(159, 145);
-            this.txtCatName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtCatName.Name = "txtCatName";
-            this.txtCatName.Size = new System.Drawing.Size(199, 26);
-            this.txtCatName.TabIndex = 2;
-            // 
-            // txtCatDesc
-            // 
-            this.txtCatDesc.Location = new System.Drawing.Point(159, 205);
-            this.txtCatDesc.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtCatDesc.Name = "txtCatDesc";
-            this.txtCatDesc.Size = new System.Drawing.Size(564, 26);
-            this.txtCatDesc.TabIndex = 3;
-            // 
-            // lblCatName
-            // 
-            this.lblCatName.AutoSize = true;
-            this.lblCatName.Location = new System.Drawing.Point(21, 145);
-            this.lblCatName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCatName.Name = "lblCatName";
-            this.lblCatName.Size = new System.Drawing.Size(128, 20);
-            this.lblCatName.TabIndex = 4;
-            this.lblCatName.Text = "Catalogue Name";
-            // 
-            // lblCatDesc
-            // 
-            this.lblCatDesc.AutoSize = true;
-            this.lblCatDesc.Location = new System.Drawing.Point(60, 205);
-            this.lblCatDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCatDesc.Name = "lblCatDesc";
-            this.lblCatDesc.Size = new System.Drawing.Size(89, 20);
-            this.lblCatDesc.TabIndex = 5;
-            this.lblCatDesc.Text = "Description";
-            // 
-            // lblUserName
-            // 
-            this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(105, 670);
-            this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(84, 20);
-            this.lblUserName.TabIndex = 6;
-            this.lblUserName.Text = "user name";
-            // 
-            // lblCurrentCat
-            // 
-            this.lblCurrentCat.AutoSize = true;
-            this.lblCurrentCat.Location = new System.Drawing.Point(890, 669);
-            this.lblCurrentCat.Name = "lblCurrentCat";
-            this.lblCurrentCat.Size = new System.Drawing.Size(139, 20);
-            this.lblCurrentCat.TabIndex = 7;
-            this.lblCurrentCat.Text = "Current Catalogue";
             // 
             // txtUsersName
             // 
@@ -144,58 +74,138 @@ namespace DigitalArchive
             this.btnUsersName.UseVisualStyleBackColor = true;
             this.btnUsersName.Click += new System.EventHandler(this.btnUsersName_Click);
             // 
-            // btnConnectCat
+            // lblGuid
             // 
-            this.btnConnectCat.Location = new System.Drawing.Point(158, 42);
-            this.btnConnectCat.Name = "btnConnectCat";
-            this.btnConnectCat.Size = new System.Drawing.Size(201, 31);
-            this.btnConnectCat.TabIndex = 11;
-            this.btnConnectCat.Text = "Connect to Catalogue";
-            this.btnConnectCat.UseVisualStyleBackColor = true;
-            this.btnConnectCat.Click += new System.EventHandler(this.btnConnectCat_Click);
+            this.lblGuid.AutoSize = true;
+            this.lblGuid.Location = new System.Drawing.Point(600, 336);
+            this.lblGuid.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblGuid.Name = "lblGuid";
+            this.lblGuid.Size = new System.Drawing.Size(0, 20);
+            this.lblGuid.TabIndex = 13;
+            // 
+            // mnuStrip
+            // 
+            this.mnuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
+            this.mnuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.mnuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.editToolStripMenuItem});
+            this.mnuStrip.Location = new System.Drawing.Point(0, 0);
+            this.mnuStrip.Name = "mnuStrip";
+            this.mnuStrip.Size = new System.Drawing.Size(1200, 33);
+            this.mnuStrip.TabIndex = 14;
+            this.mnuStrip.Text = "menuStrip1";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addCatalogueToolStripMenuItem,
+            this.openCatalogueToolStripMenuItem,
+            this.openRecentToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(108, 29);
+            this.toolStripMenuItem1.Text = "Catalogue";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // addCatalogueToolStripMenuItem
+            // 
+            this.addCatalogueToolStripMenuItem.Name = "addCatalogueToolStripMenuItem";
+            this.addCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.addCatalogueToolStripMenuItem.Text = "New Catalogue";
+            this.addCatalogueToolStripMenuItem.Click += new System.EventHandler(this.addCatalogueToolStripMenuItem_Click);
+            // 
+            // openCatalogueToolStripMenuItem
+            // 
+            this.openCatalogueToolStripMenuItem.Name = "openCatalogueToolStripMenuItem";
+            this.openCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openCatalogueToolStripMenuItem.Text = "Open Catalogue";
+            this.openCatalogueToolStripMenuItem.Click += new System.EventHandler(this.openCatalogueToolStripMenuItem_Click);
+            // 
+            // openRecentToolStripMenuItem
+            // 
+            this.openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
+            this.openRecentToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openRecentToolStripMenuItem.Text = "Open Recent";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripUserName,
+            this.toolStripCurCat});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 660);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1200, 32);
+            this.statusStrip1.TabIndex = 15;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripUserName
+            // 
+            this.toolStripUserName.Name = "toolStripUserName";
+            this.toolStripUserName.Size = new System.Drawing.Size(179, 25);
+            this.toolStripUserName.Text = "toolStripStatusLabel1";
+            // 
+            // toolStripCurCat
+            // 
+            this.toolStripCurCat.Name = "toolStripCurCat";
+            this.toolStripCurCat.Size = new System.Drawing.Size(179, 25);
+            this.toolStripCurCat.Text = "toolStripStatusLabel2";
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
-            this.Controls.Add(this.btnConnectCat);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.lblGuid);
             this.Controls.Add(this.btnUsersName);
             this.Controls.Add(this.lblUsersName);
             this.Controls.Add(this.txtUsersName);
-            this.Controls.Add(this.lblCurrentCat);
-            this.Controls.Add(this.lblUserName);
-            this.Controls.Add(this.lblCatDesc);
-            this.Controls.Add(this.lblCatName);
-            this.Controls.Add(this.txtCatDesc);
-            this.Controls.Add(this.txtCatName);
-            this.Controls.Add(this.lblGuid);
-            this.Controls.Add(this.btnGetGuid);
+            this.Controls.Add(this.mnuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.mnuStrip;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "Main";
-            this.Text = "Main";
+            this.Text = "Digital Archive";
             this.Load += new System.EventHandler(this.Main_Load);
+            this.mnuStrip.ResumeLayout(false);
+            this.mnuStrip.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btnGetGuid;
-        private System.Windows.Forms.Label lblGuid;
-        private System.Windows.Forms.TextBox txtCatName;
-        private System.Windows.Forms.TextBox txtCatDesc;
-        private System.Windows.Forms.Label lblCatName;
-        private System.Windows.Forms.Label lblCatDesc;
-        private System.Windows.Forms.Label lblUserName;
-        private System.Windows.Forms.Label lblCurrentCat;
         private System.Windows.Forms.TextBox txtUsersName;
         private System.Windows.Forms.Label lblUsersName;
         private System.Windows.Forms.Button btnUsersName;
-        private System.Windows.Forms.Button btnConnectCat;
+        private System.Windows.Forms.Label lblGuid;
+        private System.Windows.Forms.MenuStrip mnuStrip;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem addCatalogueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openCatalogueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openRecentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripUserName;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripCurCat;
     }
 }
 

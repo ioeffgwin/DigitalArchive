@@ -17,18 +17,58 @@ namespace DigitalArchive
         public Main()
         {
             InitializeComponent();
-            SQLiteConnection sys_conn;
-            sys_conn = Globals.sys_Conn;
-            lblCurrentCat.Text = "No Catalogue opened";
+
+            toolStripCurCat.Text = "No Catalogue opened";
             //add in code to read data from digarch.dacat
             // if no data not used before some data required
 
-            Catalogue curCat = new Catalogue(GetLatestCatalogue());
-            
-            lblCurrentCat.Text = "Current Catalogue: " + curCat.catName;
-            
+            string curCatID = GetLatestCatalogue();
+            if(curCatID!=null)
+            {
+                Catalogue curCat = new Catalogue(curCatID);
+                toolStripCurCat.Text = "Current Catalogue: " + curCat.catName;
+            }
+
+            //get most 5 recent catalogues
+            string sql = "SELECT catName, catUUID, catDateOpened FROM tblCatsOpened ORDER BY catDateOpened DESC LIMIT 5";
+            using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
+            {
+                conn.Open();
+                using (SQLiteCommand sql_cmd = new SQLiteCommand(sql, conn))
+                {
+
+                    var mnu = mnuStrip.Items[0];
+                    MenuItem addDevice = new MenuItem("Previous Catalogues");
+                    SQLiteDataReader sqlRead;
+                    sqlRead = sql_cmd.ExecuteReader();
+                    int i = 0;
+                    ToolStripMenuItem[] subItem = new ToolStripMenuItem[5];
+                    while (sqlRead.Read())
+                    {
+                        subItem[i] = new ToolStripMenuItem();
+                        subItem[i].Name = "mnuPrevCat" + i.ToString();
+                        subItem[i].Tag = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
+                        subItem[i].Text = sqlRead.GetString(sqlRead.GetOrdinal("catName")) + "|" + sqlRead.GetString(sqlRead.GetOrdinal("catDateOpened"));
+                        subItem[i].Click += new EventHandler(catPrevMenuItemClick);
+                     //   mnuStrip.Items.Add(subItem[i]); // this adds the stuff
+                        i++;
+                     
+                        //if (!sqlRead.IsDBNull(0)) catName = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
+                    }
+                    
+                }
+                conn.Close();
+            }
+
+
 
         }
+
+        private void catPrevMenuItemClick(object sender, EventArgs e)
+        {
+            
+        }
+
 
 
         static void InsertData(SQLiteConnection conn, string SQLstr )
@@ -40,39 +80,6 @@ namespace DigitalArchive
             sqlite_cmd.CommandText = "INSERT INTO SampleTable
                (Col1, Col2) VALUES('Test Text ', 1); ";
            sqlite_cmd.ExecuteNonQuery();
-            */
-        }
-
-        static void SetLatestCatalogue(string catNum, string catName)
-        {
-            // update tblAppSystemb(no where clause as only one line should be in use)
-            string sqlu = "UPDATE tblAppSystem SET LastCatalogue = '" + catNum + "'; ";
-            // insert tblCatsOpened
-            string sqli = "INSERT INTO tblCatsOpened (catUUID, catName, catDateOpened, catPath) " +
-                "VALUES ('" + catNum + "','" + catName + "','" + DateTime.Now + "','\test\');";
-
-            using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
-            {
-                conn.Open();
-                using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu + sqli, conn))
-                {
-                    sql_cmd.ExecuteNonQuery();
-                }
-                conn.Close();
-            }
-
-            /*
-            SQLiteCommand sql_cmd;
-            sql_cmd = conn.CreateCommand();
-            sql_cmd.CommandText = sqlu + sqli;
-            sql_cmd.ExecuteNonQuery();
-            */
-
-            /*
-            SQLiteDataReader sqlite_datareader;
-            SQLiteCommand sqlite_cmd;
-            sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "SELECT * FROM SampleTable";
             */
         }
 
@@ -92,7 +99,7 @@ namespace DigitalArchive
                         sqlRead = sql_cmd.ExecuteReader();
                         while (sqlRead.Read())
                         {
-                            catName = sqlRead.GetString(sqlRead.GetOrdinal("LastCatalogue"));
+                            if(!sqlRead.IsDBNull(0)) catName = sqlRead.GetString(sqlRead.GetOrdinal("LastCatalogue"));
                         }
                     }
                     conn.Close();
@@ -152,7 +159,7 @@ namespace DigitalArchive
                 {
                     catFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); //"c:\\";
                     catFile.Filter = "dacat files (*.dacat)|*.dacat|All files (*.*)|*.*";
-                    catFile.FilterIndex = 2;
+                    catFile.FilterIndex = 1;
                     catFile.RestoreDirectory = true;
                     if (catFile.ShowDialog() == DialogResult.OK)
                     {
@@ -171,7 +178,7 @@ namespace DigitalArchive
                         }
                         finally
                         {
-                            lblCurrentCat.Text = Globals.curCatName;
+                            toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
                         }
 
                         // if it is then store path and name locally
@@ -188,106 +195,83 @@ namespace DigitalArchive
             }
             catch (Exception e)
             {
-
+                throw e;
             }
 
         }
 
-
-        private void btnGetGuid_Click(object sender, EventArgs e)
+        public string LabelCurrentCat
         {
-            string CatUUID;
-            try
+            get
             {
-                throw new NotImplementedException();            }
-            catch(NotImplementedException notImp)
+                return this.toolStripCurCat.Text;
+            }
+            set
             {
-                DialogResult dlgResult = MessageBox.Show("Are you sure you want to create a new catalogue?", notImp.Message,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dlgResult == DialogResult.Yes && txtCatDesc.TextLength > 5 && txtCatName.TextLength > 5)
-                {
-                    CatUUID = System.Guid.NewGuid().ToString() + ".dacat";
-                    lblGuid.Text = CatUUID;
-                    //SQLiteConnection.CreateFile(CatName);
-                    SQLiteConnection dbConn = new SQLiteConnection("Data Source=" + CatUUID + "; Version = 3; Compress = True;");
-                    dbConn.Open();
-                    string sql = "CREATE TABLE tblCatalogue(catName       VARCHAR(120) UNIQUE NOT NULL, " +
-                           "catUUID       VARCHAR(255)  UNIQUE  NOT NULL, " +
-                           "catCreated    DATE          NOT NULL UNIQUE, " +
-                           "catDesc       VARCHAR(255) UNIQUE NOT NULL, " +
-                           "catVersion    VARCHAR(10)  UNIQUE NOT NULL, " +
-                           "catLastUpdate DATE          UNIQUE NOT NULL " +
-                           "); ";
-                    sql += "CREATE TABLE tblItems (" +
-                          "itemID INTEGER       PRIMARY KEY ASC AUTOINCREMENT NOT NULL UNIQUE, " +
-                          "itemAdded DATETIME      NOT NULL, " +
-                          "itemAddedBy    VARCHAR(50)  NOT NULL, " +
-                          "itemName       VARCHAR(255) NOT NULL, " +
-                          "itemPath       VARCHAR(255) NOT NULL, " +
-                          "itemChecksum   VARCHAR(150) NOT NULL, " +
-                          "itemLastChange DATETIME NOT NULL, " +
-                          "itemOwner      VARCHAR(128), " +
-                          "itemCopyright  BOOLEAN NOT NULL DEFAULT(0), " +
-                          "itemGDPR       BOOLEAN NOT NULL DEFAULT(0) " +
-                          ");   ";
-                    sql += "CREATE TABLE tbllkpMetaFormat(metaTitle VARCHAR(255) UNIQUE PRIMARY KEY ASC);";
-                    sql += "CREATE TABLE tblItemMeta(metaID     INTEGER       PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
-                          "itemID     INTEGER       REFERENCES tblItems(itemID) NOT NULL, " +
-                          "metaOrig   BOOLEAN       NOT NULL DEFAULT(0), " +
-                          "metaTitle  VARCHAR(255) NOT NULL REFERENCES tbllkpMetaFormat(metaTitle), " +
-                          "metaFormat VARCHAR(50)  NOT NULL, " +
-                          "metaData   VARCHAR(255) NOT NULL " +
-                          "); ";
-                    sql += "CREATE TABLE tblChangeLog ( " +
-                        "logID INTEGER        PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
-                        "logItemID INTEGER        NOT NULL, " +
-                        "logDateTime   DATETIME NOT NULL, " +
-                        "logChangedBy VARCHAR(15)  NOT NULL, " +
-                        "logChangeDets VARCHAR(1024) NOT NULL, " +
-                        "logCatVersion VARCHAR(10)   NOT NULL " +
-                        "); ";
-                    SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-                    command.ExecuteNonQuery();
-                    sql = "INSERT INTO tblCatalogue VALUES ('" + txtCatName.Text + 
-                        "', '" + CatUUID + "', '" + DateTime.Now + 
-                        "', '" + txtCatDesc.Text + "', '1.0', '" + DateTime.Now + "'); ";
-                    sql += "INSERT INTO tbllkpMetaFormat (metaTitle)" +
-                        "VALUES ('TYPE OF FILE'), ('NAME'), ('SIZE'), ('CREATED'), ('MODIFIED'), ('READ ONLY'), ('LOCATION'), " +
-                        "('READ-ONLY'), ('HIDDEN'), ('DATE TAKEN'), ('KEYWORDS');";
-                    command = new SQLiteCommand(sql, dbConn);
-                    command.ExecuteNonQuery();
-                    dbConn.Close();
-                    // add data to digarch.dacat to update with latest catalogue
-                    SetLatestCatalogue(CatUUID, txtCatName.Text);
-
-                    // update info on screen
-                    lblGuid.Text = "Catalogue " + CatUUID + " has been created";
-                    lblCurrentCat.Text = "Current Catalogue: " + txtCatName.Text;
-
-                }
-                else
-                {
-                    lblGuid.Text = "you must enter a name and description > 5 characters";
-                }
-
+                this.toolStripCurCat.Text = value;
             }
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
-            lblUserName.Text = "User: " + Globals.usersName;
+            toolStripUserName.Text = "User: " + Globals.usersName;
         }
 
         private void btnUsersName_Click(object sender, EventArgs e)
         {
             // this needs a bit more validatyion etc
-            Globals.usersName = txtUsersName.Text;
+            // update app tables
+            Globals.SetUserName(txtUsersName.Text);
+            toolStripUserName.Text = Globals.usersName;
+
         }
 
         private void btnConnectCat_Click(object sender, EventArgs e)
         {
             //change to a different catalogue
             GetCatalogue();
+        }
+
+        private void btnNewCat_Click(object sender, EventArgs e)
+        {
+            new NewCat().Show();
+
+            
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new NewCat().Show();
+
+        }
+
+        private void openCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetCatalogue();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (System.Windows.Forms.Application.MessageLoop)
+            {
+                // WinForms app
+                System.Windows.Forms.Application.Exit();
+            }
+            else
+            {
+                // Console app
+                System.Environment.Exit(1);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+                    ReadFileInfo.ReadFiles();
         }
     }
 }

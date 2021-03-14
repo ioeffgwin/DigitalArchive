@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Windows.Forms;
+using System.IO;
 
 
 namespace DigitalArchive
@@ -20,8 +21,12 @@ namespace DigitalArchive
         public string catDateLastUpdate; //datetime really
 
         public Catalogue(string catPath)
-        { //get details of current catalogue to use 
-            if (catPath != null)
+        {
+            //check if path is valid
+
+            //get details of current catalogue to use 
+
+            if (File.Exists(catPath))
             {
 
                

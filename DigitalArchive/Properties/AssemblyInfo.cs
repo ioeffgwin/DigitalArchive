@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DigitalArchive")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Digital Archiving for the community")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DigitalArchive")]

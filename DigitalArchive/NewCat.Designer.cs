@@ -120,6 +120,7 @@ namespace DigitalArchive
             this.txtFilePath.Size = new System.Drawing.Size(483, 26);
             this.txtFilePath.TabIndex = 12;
             this.txtFilePath.Click += new System.EventHandler(this.txtFilePath_TextChanged);
+            this.txtFilePath.TextChanged += new System.EventHandler(this.txtFilePath_TextChanged_1);
             // 
             // lblFilePath
             // 

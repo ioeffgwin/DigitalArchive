@@ -29,27 +29,43 @@ namespace DigitalArchive
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.Button btnGetFolder;
             this.txtUsersName = new System.Windows.Forms.TextBox();
             this.lblUsersName = new System.Windows.Forms.Label();
             this.btnUsersName = new System.Windows.Forms.Button();
             this.lblGuid = new System.Windows.Forms.Label();
             this.mnuStrip = new System.Windows.Forms.MenuStrip();
+            this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editUserNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.addCatalogueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openCatalogueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openRecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editCatalogueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripUserName = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripCurCat = new System.Windows.Forms.ToolStripStatusLabel();
-            this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editUserNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.editCatalogueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnCancelUsersName = new System.Windows.Forms.Button();
+            this.treeViewCat = new System.Windows.Forms.TreeView();
+            this.mainImageList = new System.Windows.Forms.ImageList(this.components);
+            this.pnlNewCat = new System.Windows.Forms.Panel();
+            this.lblFilePath = new System.Windows.Forms.Label();
+            this.txtFilePath = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblCatDesc = new System.Windows.Forms.Label();
+            this.lblCatName = new System.Windows.Forms.Label();
+            this.txtCatDesc = new System.Windows.Forms.TextBox();
+            this.txtCatName = new System.Windows.Forms.TextBox();
+            this.btnGetGuid = new System.Windows.Forms.Button();
+            this.btnCancelNew = new System.Windows.Forms.Button();
+            btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.pnlNewCat.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtUsersName
@@ -85,7 +101,7 @@ namespace DigitalArchive
             // lblGuid
             // 
             this.lblGuid.AutoSize = true;
-            this.lblGuid.Location = new System.Drawing.Point(600, 336);
+            this.lblGuid.Location = new System.Drawing.Point(251, 296);
             this.lblGuid.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblGuid.Name = "lblGuid";
             this.lblGuid.Size = new System.Drawing.Size(0, 20);
@@ -103,6 +119,29 @@ namespace DigitalArchive
             this.mnuStrip.Size = new System.Drawing.Size(1200, 33);
             this.mnuStrip.TabIndex = 14;
             this.mnuStrip.Text = "menuStrip1";
+            // 
+            // applicationToolStripMenuItem
+            // 
+            this.applicationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editUserNameToolStripMenuItem,
+            this.exitToolStripMenuItem1});
+            this.applicationToolStripMenuItem.Name = "applicationToolStripMenuItem";
+            this.applicationToolStripMenuItem.Size = new System.Drawing.Size(118, 29);
+            this.applicationToolStripMenuItem.Text = "Application";
+            // 
+            // editUserNameToolStripMenuItem
+            // 
+            this.editUserNameToolStripMenuItem.Name = "editUserNameToolStripMenuItem";
+            this.editUserNameToolStripMenuItem.Size = new System.Drawing.Size(236, 34);
+            this.editUserNameToolStripMenuItem.Text = "Edit User Name";
+            this.editUserNameToolStripMenuItem.Click += new System.EventHandler(this.editUserNameToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem1
+            // 
+            this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(236, 34);
+            this.exitToolStripMenuItem1.Text = "Exit";
+            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -137,6 +176,12 @@ namespace DigitalArchive
             this.openRecentToolStripMenuItem.Text = "Open Recent";
             this.openRecentToolStripMenuItem.Click += new System.EventHandler(this.openRecentToolStripMenuItem_Click);
             // 
+            // editCatalogueToolStripMenuItem
+            // 
+            this.editCatalogueToolStripMenuItem.Name = "editCatalogueToolStripMenuItem";
+            this.editCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.editCatalogueToolStripMenuItem.Text = "Edit Catalogue";
+            // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
@@ -162,35 +207,6 @@ namespace DigitalArchive
             this.toolStripCurCat.Size = new System.Drawing.Size(179, 25);
             this.toolStripCurCat.Text = "toolStripStatusLabel2";
             // 
-            // applicationToolStripMenuItem
-            // 
-            this.applicationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editUserNameToolStripMenuItem,
-            this.exitToolStripMenuItem1});
-            this.applicationToolStripMenuItem.Name = "applicationToolStripMenuItem";
-            this.applicationToolStripMenuItem.Size = new System.Drawing.Size(118, 29);
-            this.applicationToolStripMenuItem.Text = "Application";
-            // 
-            // editUserNameToolStripMenuItem
-            // 
-            this.editUserNameToolStripMenuItem.Name = "editUserNameToolStripMenuItem";
-            this.editUserNameToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.editUserNameToolStripMenuItem.Text = "Edit User Name";
-            this.editUserNameToolStripMenuItem.Click += new System.EventHandler(this.editUserNameToolStripMenuItem_Click);
-            // 
-            // exitToolStripMenuItem1
-            // 
-            this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(270, 34);
-            this.exitToolStripMenuItem1.Text = "Exit";
-            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
-            // 
-            // editCatalogueToolStripMenuItem
-            // 
-            this.editCatalogueToolStripMenuItem.Name = "editCatalogueToolStripMenuItem";
-            this.editCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.editCatalogueToolStripMenuItem.Text = "Edit Catalogue";
-            // 
             // toolStripMessage
             // 
             this.toolStripMessage.Name = "toolStripMessage";
@@ -212,14 +228,149 @@ namespace DigitalArchive
             this.btnCancelUsersName.Visible = false;
             this.btnCancelUsersName.Click += new System.EventHandler(this.btnCancelUsersName_Click);
             // 
+            // treeViewCat
+            // 
+            this.treeViewCat.Location = new System.Drawing.Point(5, 36);
+            this.treeViewCat.Name = "treeViewCat";
+            this.treeViewCat.Size = new System.Drawing.Size(330, 621);
+            this.treeViewCat.TabIndex = 17;
+            this.treeViewCat.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewCat_BeforeExpand);
+            this.treeViewCat.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewCat_AfterSelect);
+            // 
+            // mainImageList
+            // 
+            this.mainImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("mainImageList.ImageStream")));
+            this.mainImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.mainImageList.Images.SetKeyName(0, "digarchive16.png");
+            this.mainImageList.Images.SetKeyName(1, "FolderOpened_16x.png");
+            this.mainImageList.Images.SetKeyName(2, "FolderClosed_16x.png");
+            this.mainImageList.Images.SetKeyName(3, "Lock_16x.png");
+            this.mainImageList.Images.SetKeyName(4, "Note_16x.png");
+            // 
+            // pnlNewCat
+            // 
+            this.pnlNewCat.Controls.Add(this.btnCancelNew);
+            this.pnlNewCat.Controls.Add(btnGetFolder);
+            this.pnlNewCat.Controls.Add(this.lblFilePath);
+            this.pnlNewCat.Controls.Add(this.txtFilePath);
+            this.pnlNewCat.Controls.Add(this.label1);
+            this.pnlNewCat.Controls.Add(this.lblCatDesc);
+            this.pnlNewCat.Controls.Add(this.lblCatName);
+            this.pnlNewCat.Controls.Add(this.txtCatDesc);
+            this.pnlNewCat.Controls.Add(this.txtCatName);
+            this.pnlNewCat.Controls.Add(this.btnGetGuid);
+            this.pnlNewCat.Controls.Add(this.lblGuid);
+            this.pnlNewCat.Location = new System.Drawing.Point(349, 40);
+            this.pnlNewCat.Name = "pnlNewCat";
+            this.pnlNewCat.Size = new System.Drawing.Size(729, 492);
+            this.pnlNewCat.TabIndex = 18;
+            this.pnlNewCat.Visible = false;
+            // 
+            // btnGetFolder
+            // 
+            btnGetFolder.Location = new System.Drawing.Point(639, 105);
+            btnGetFolder.Name = "btnGetFolder";
+            btnGetFolder.Size = new System.Drawing.Size(33, 32);
+            btnGetFolder.TabIndex = 23;
+            btnGetFolder.Text = "...";
+            btnGetFolder.UseVisualStyleBackColor = true;
+            btnGetFolder.Click += new System.EventHandler(this.btnGetFolder_Click);
+            // 
+            // lblFilePath
+            // 
+            this.lblFilePath.AutoSize = true;
+            this.lblFilePath.Location = new System.Drawing.Point(22, 110);
+            this.lblFilePath.Name = "lblFilePath";
+            this.lblFilePath.Size = new System.Drawing.Size(119, 20);
+            this.lblFilePath.TabIndex = 22;
+            this.lblFilePath.Text = "Select Location";
+            this.lblFilePath.Click += new System.EventHandler(this.lblFilePath_Click);
+            // 
+            // txtFilePath
+            // 
+            this.txtFilePath.Location = new System.Drawing.Point(151, 107);
+            this.txtFilePath.Name = "txtFilePath";
+            this.txtFilePath.Size = new System.Drawing.Size(483, 26);
+            this.txtFilePath.TabIndex = 21;
+            this.txtFilePath.Click += new System.EventHandler(this.txtFilePath_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(147, 133);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(0, 20);
+            this.label1.TabIndex = 20;
+            // 
+            // lblCatDesc
+            // 
+            this.lblCatDesc.AutoSize = true;
+            this.lblCatDesc.Location = new System.Drawing.Point(52, 232);
+            this.lblCatDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCatDesc.Name = "lblCatDesc";
+            this.lblCatDesc.Size = new System.Drawing.Size(89, 20);
+            this.lblCatDesc.TabIndex = 19;
+            this.lblCatDesc.Text = "Description";
+            // 
+            // lblCatName
+            // 
+            this.lblCatName.AutoSize = true;
+            this.lblCatName.Location = new System.Drawing.Point(13, 172);
+            this.lblCatName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCatName.Name = "lblCatName";
+            this.lblCatName.Size = new System.Drawing.Size(128, 20);
+            this.lblCatName.TabIndex = 18;
+            this.lblCatName.Text = "Catalogue Name";
+            // 
+            // txtCatDesc
+            // 
+            this.txtCatDesc.Location = new System.Drawing.Point(151, 232);
+            this.txtCatDesc.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtCatDesc.Multiline = true;
+            this.txtCatDesc.Name = "txtCatDesc";
+            this.txtCatDesc.Size = new System.Drawing.Size(564, 90);
+            this.txtCatDesc.TabIndex = 17;
+            // 
+            // txtCatName
+            // 
+            this.txtCatName.Location = new System.Drawing.Point(151, 172);
+            this.txtCatName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtCatName.Name = "txtCatName";
+            this.txtCatName.Size = new System.Drawing.Size(199, 26);
+            this.txtCatName.TabIndex = 16;
+            // 
+            // btnGetGuid
+            // 
+            this.btnGetGuid.Location = new System.Drawing.Point(149, 352);
+            this.btnGetGuid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnGetGuid.Name = "btnGetGuid";
+            this.btnGetGuid.Size = new System.Drawing.Size(201, 35);
+            this.btnGetGuid.TabIndex = 15;
+            this.btnGetGuid.Text = "Creat New Catalogue";
+            this.btnGetGuid.UseVisualStyleBackColor = true;
+            this.btnGetGuid.Click += new System.EventHandler(this.btnGetGuid_Click);
+            // 
+            // btnCancelNew
+            // 
+            this.btnCancelNew.Location = new System.Drawing.Point(367, 352);
+            this.btnCancelNew.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnCancelNew.Name = "btnCancelNew";
+            this.btnCancelNew.Size = new System.Drawing.Size(201, 35);
+            this.btnCancelNew.TabIndex = 24;
+            this.btnCancelNew.Text = "cancel";
+            this.btnCancelNew.UseVisualStyleBackColor = true;
+            this.btnCancelNew.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.pnlNewCat);
+            this.Controls.Add(this.treeViewCat);
             this.Controls.Add(this.btnCancelUsersName);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.lblGuid);
             this.Controls.Add(this.btnUsersName);
             this.Controls.Add(this.lblUsersName);
             this.Controls.Add(this.txtUsersName);
@@ -234,6 +385,8 @@ namespace DigitalArchive
             this.mnuStrip.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.pnlNewCat.ResumeLayout(false);
+            this.pnlNewCat.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -258,6 +411,18 @@ namespace DigitalArchive
         private System.Windows.Forms.ToolStripMenuItem editCatalogueToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripMessage;
         private System.Windows.Forms.Button btnCancelUsersName;
+        private System.Windows.Forms.TreeView treeViewCat;
+        private System.Windows.Forms.ImageList mainImageList;
+        private System.Windows.Forms.Panel pnlNewCat;
+        private System.Windows.Forms.Label lblFilePath;
+        private System.Windows.Forms.TextBox txtFilePath;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblCatDesc;
+        private System.Windows.Forms.Label lblCatName;
+        private System.Windows.Forms.TextBox txtCatDesc;
+        private System.Windows.Forms.TextBox txtCatName;
+        private System.Windows.Forms.Button btnGetGuid;
+        private System.Windows.Forms.Button btnCancelNew;
     }
 }
 

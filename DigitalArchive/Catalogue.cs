@@ -16,7 +16,8 @@ namespace DigitalArchive
         public string catUUID; //40 
         public string catName; //120
         public string catDesc; //255
-        public string catVer; //10
+        public string catVer; //18
+        public string catPath; //255
         public string catDateCreated; //datetime really
         public string catDateLastUpdate; //datetime really
 
@@ -47,8 +48,10 @@ namespace DigitalArchive
                         this.catVer = sqlRead.GetString(sqlRead.GetOrdinal("catVersion"));
                         this.catDateCreated = sqlRead.GetString(sqlRead.GetOrdinal("catCreated"));
                         this.catDateLastUpdate = sqlRead.GetString(sqlRead.GetOrdinal("catLastUpdate"));
+                        this.catPath = Path.GetDirectoryName(this.catUUID).Replace("\\DACAT","");
                     }
                     cat_Conn.Close();
+                    SetLatestCatalogue();
                 }
                 catch (Exception e)
                 {
@@ -60,6 +63,7 @@ namespace DigitalArchive
                     Globals.curCatUUID = this.catUUID;
                     Globals.curCatName = this.catName;
                     Globals.curCatDesc = this.catDesc;
+                    Globals.curCatPath = this.catPath;
                 
                 }
 
@@ -75,19 +79,33 @@ namespace DigitalArchive
 
 
 
-        public void setCatalogueVer(string newVersion)
-        { //change Cat Version (and last changed date)
+        public void setCatalogueVer()
+        {   
+            /*
+             * J Vincent
+             * This update the catalogue to the latest version
+             * latest version is in date format down to millisecond
+             * can be used for comparison with other copies of the "same" catalogue
+             * catalogue version update with every change
+             * 
+             */
+            //change Cat Version (and last changed date)
+            //
+            DateTime theDate = DateTime.Now;
+            string newVersion = theDate.ToString("yyyyMMddHHmmssFFF");
             try
             {
                 SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
                 cat_conn.Open();
                 // update tblAppSystemb(no where clause as only one line should be in use)
-                string sqlu = "UPDATE tblCatalogue SET CatVersion = '" + newVersion + "', catLastUpdate = '" + DateTime.Now + "'; ";
+                string sqlu = "UPDATE tblCatalogue SET CatVersion = '" + newVersion + "', catLastUpdate = '" + theDate + "'; ";
                 SQLiteCommand sql_cmd;
                 sql_cmd = cat_conn.CreateCommand();
                 sql_cmd.CommandText = sqlu;
                 sql_cmd.ExecuteNonQuery();
                 cat_conn.Close();
+                this.catVer = newVersion;
+                this.catDateLastUpdate = theDate.ToString();
 
             }
             catch (Exception e)
@@ -100,15 +118,17 @@ namespace DigitalArchive
         { //change Cat last changed date
             try
             {
+                DateTime theDate = DateTime.Now;
                 SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
                 cat_conn.Open();
                 // update tblAppSystemb(no where clause as only one line should be in use)
-                string sqlu = "UPDATE tblCatalogue SET catLastUpdate = '" + DateTime.Now + "'; ";
+                string sqlu = "UPDATE tblCatalogue SET catLastUpdate = '" + theDate + "'; ";
                 SQLiteCommand sql_cmd;
                 sql_cmd = cat_conn.CreateCommand();
                 sql_cmd.CommandText = sqlu;
                 sql_cmd.ExecuteNonQuery();
                 cat_conn.Close();
+                this.catDateLastUpdate = theDate.ToString();
             }
             catch (Exception e)
             {
@@ -116,6 +136,24 @@ namespace DigitalArchive
             }
         }
 
+        public void SetLatestCatalogue()
+        {
+            // update tblAppSystemb(no where clause as only one line should be in use)
+            string sqlu = "UPDATE tblAppSystem SET LastCatalogue = '" + this.catUUID + "'; ";
+            // insert tblCatsOpened
+            string sqli = "INSERT INTO tblCatsOpened (catUUID, catName, catDateOpened, catPath) " +
+                "VALUES ('" + this.catUUID + "','" + this.catName + "','" + DateTime.Now + "','" + Path.GetDirectoryName(this.catUUID).Replace("\\DACAT", "") + "');";
+
+            using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
+            {
+                conn.Open();
+                using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu + sqli, conn))
+                {
+                    sql_cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+        }
 
 
         //get items

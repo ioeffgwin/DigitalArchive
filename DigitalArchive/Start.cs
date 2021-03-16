@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
+using System.IO;
 
 
 namespace DigitalArchive
@@ -31,16 +32,18 @@ namespace DigitalArchive
             {
                 curCatID = GetLatestCatalogue();
             }
-
+            
 
             if (curCatID!=null)
             {
                 Catalogue curCat = new Catalogue(curCatID);
                 toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
+                PopulateTreeView();
+
             }
 
             //get most 5 recent catalogues
-            string sql = "SELECT catName, catUUID, catDateOpened FROM tblCatsOpened ORDER BY catDateOpened DESC LIMIT 5";
+            string sql = "SELECT catName, catUUID, catDateOpened FROM tblCatsOpened GROUP BY catUUID ORDER BY catDateOpened DESC LIMIT 5";
             using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
             {
                 conn.Open();
@@ -92,6 +95,7 @@ namespace DigitalArchive
                 toolStripCurCat.Text = "Current Catalogue: " + curCat.catName;
 
             }
+            PopulateTreeView();
 
         }
 
@@ -226,6 +230,198 @@ namespace DigitalArchive
 
         }
 
+        public void PopulateTreeView()
+        {
+            /*
+             * 
+             * 
+             * 
+             */
+
+            treeViewCat.ImageList = mainImageList; // this needs to be populated with appropriate images
+
+            try
+            {
+                //clear treeview first
+                treeViewCat.Nodes.Clear();
+
+                //get new path from selection of catalogue
+                string catPath;
+                //catPath = "D:\\Public\\Photos\\Cosmeston"; // this value will need to be set from catalogue path
+                catPath = Globals.curCatPath;
+                if (catPath == null) catPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                List<string> list = new List<string>();
+
+                list.Add(catPath);
+                string[] items = list.ToArray();
+
+                foreach (string item in items)
+                {
+                    DriveInfo di = new DriveInfo(item);
+                    int itemImage;
+
+                    switch (di.DriveType)    //set the drive's icon
+                    {
+                        case DriveType.CDRom:
+                            itemImage = 3;
+                            break;
+                        case DriveType.Network:
+                            itemImage = 6;
+                            break;
+                        case DriveType.NoRootDirectory:
+                            itemImage = 8;
+                            break;
+                        case DriveType.Fixed:
+                            itemImage = 0;
+                            break;
+                        default:
+                            itemImage = 2;
+                            break;
+                    }
+
+                    //TreeNode node = new TreeNode(drive.Substring(0, 1), itemImage, itemImage);
+                    TreeNode node = new TreeNode(item.ToString(), itemImage, itemImage);
+                    node.Tag = item;
+
+                    if (di.IsReady == true)
+                        node.Nodes.Add("...");
+
+                    treeViewCat.Nodes.Add(node);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        private void treeViewCat_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            /*
+             * 
+             * 
+             * 
+             * 
+             * 
+             */
+
+            if (e.Node.Nodes.Count > 0)
+            {
+                if (e.Node.Nodes[0].Text == "..." && e.Node.Nodes[0].Tag == null)
+                {
+                    e.Node.Nodes.Clear();
+
+                    //get the list of sub direcotires
+                    string[] dirs = Directory.GetDirectories(e.Node.Tag.ToString());
+
+                    foreach (string dir in dirs)
+                    {
+                        DirectoryInfo di = new DirectoryInfo(dir);
+                        TreeNode node = new TreeNode(di.Name, 1, 2);
+
+                        try
+                        {
+                            //keep the directory's full path in the tag for use later
+                            node.Tag = dir;
+
+                            //if the directory has sub directories add the place holder
+                            if (di.GetDirectories().Count() > 0)
+                                node.Nodes.Add(null, "...", 0, 0);
+
+                            foreach (var file in di.GetFiles())
+                            {
+                                TreeNode n = new TreeNode(file.Name, 4, 4);
+                                node.Nodes.Add(n);
+                            }
+
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            //display a locked folder icon
+                            node.ImageIndex = 3;
+                            node.SelectedImageIndex = 3;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "DirectoryLister",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        finally
+                        {
+                            e.Node.Nodes.Add(node);
+                        }
+                    }
+                    //add files of rootdirectory
+                    DirectoryInfo rootDir = new DirectoryInfo(e.Node.Tag.ToString());
+                    foreach (var file in rootDir.GetFiles())
+                    {
+                        TreeNode n = new TreeNode(file.Name, 4, 4);
+                        e.Node.Nodes.Add(n);
+                    }
+
+                }
+            }
+        }
+
+        List<TreeNode> getFolderNodes(string dir, bool expanded)
+        {
+            /*
+             * 
+             * https://stackoverflow.com/questions/34464800/c-sharp-how-to-use-treeview-to-list-the-directories-and-subdirectories-without-s
+             * 16/3/21
+             * 
+             */
+
+            var dirs = Directory.GetDirectories(dir).ToArray();
+            var nodes = new List<TreeNode>();
+            
+            foreach (string d in dirs)
+            {
+                DirectoryInfo di = new DirectoryInfo(d);
+                TreeNode tn = new TreeNode(di.Name);
+                tn.Tag = di;
+                int subCount = 0;
+                try { subCount = Directory.GetDirectories(d).Count(); }
+                catch { /* ignore accessdenied */  }
+                if (subCount > 0) tn.Nodes.Add("...");
+                if (expanded) tn.Expand();   //  **
+                nodes.Add(tn);
+            }
+            return nodes;
+        }
+
+        List<TreeNode> getAllFolderNodes(string dir)
+        {
+            /*
+             * 
+             * https://stackoverflow.com/questions/34464800/c-sharp-how-to-use-treeview-to-list-the-directories-and-subdirectories-without-s
+             * 16/3/21
+             * 
+             */
+
+            var dirs = Directory.GetDirectories(dir).ToArray();
+            var nodes = new List<TreeNode>();
+            foreach (string d in dirs)
+            {
+                DirectoryInfo di = new DirectoryInfo(d);
+                TreeNode tn = new TreeNode(di.Name);
+                tn.Tag = di;
+                int subCount = 0;
+                try { subCount = Directory.GetDirectories(d).Count(); }
+                catch { /* ignore accessdenied */  }
+                if (subCount > 0)
+                {
+                    var subNodes = getAllFolderNodes(di.FullName);
+                    tn.Nodes.AddRange(subNodes.ToArray());
+                }
+                nodes.Add(tn);
+            }
+            return nodes;
+        }
+
         public string LabelCurrentCat
         {
             get
@@ -295,11 +491,13 @@ namespace DigitalArchive
         {
             //change to a different catalogue
             GetCatalogue();
+            PopulateTreeView();
+
         }
 
         private void btnNewCat_Click(object sender, EventArgs e)
         {
-            new NewCat().Show();
+            new NewCat().ShowDialog();
 
             
         }
@@ -311,13 +509,15 @@ namespace DigitalArchive
 
         private void addCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new NewCat().Show();
-         
+            //new NewCat().ShowDialog();
+            pnlNewCat.Visible = true;
         }
 
         private void openCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GetCatalogue();
+            PopulateTreeView();
+
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -388,6 +588,80 @@ namespace DigitalArchive
             this.btnUsersName.Visible = false;
             this.btnCancelUsersName.Visible = false;
             this.toolStripMessage.Text = "";
+
+        }
+
+        private void treeViewCat_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            string nodeDets;
+            nodeDets = treeViewCat.SelectedNode.Text;
+
+            // need to do somthing with this
+
+
+        }
+
+        private string GetCatalogueLoc()
+        {
+            txtFilePath.Text = "click here to select location";
+            string filePath = "";
+            using (FolderBrowserDialog getFilePath = new FolderBrowserDialog())
+            {
+                DialogResult result = getFilePath.ShowDialog();
+                getFilePath.Description = "Select location of the new catalogue";
+                getFilePath.RootFolder = Environment.SpecialFolder.MyDocuments;
+
+                if (result == DialogResult.OK)
+                {
+                    filePath = getFilePath.SelectedPath;
+                }
+
+            }
+
+            return filePath;
+
+        }
+
+
+        private void btnGetFolder_Click(object sender, EventArgs e)
+        {
+            txtFilePath.Text = GetCatalogueLoc();
+        }
+
+        private void lblFilePath_Click(object sender, EventArgs e)
+        {
+            txtFilePath.Text = GetCatalogueLoc();
+        }
+
+        private void btnGetGuid_Click(object sender, EventArgs e)
+        {
+            string msg;
+            NewCatalogue nc = new NewCatalogue(txtFilePath.Text, txtCatName.Text, txtCatDesc.Text);
+            msg = nc.retMessage;
+            txtFilePath.Text = null;
+            txtCatName.Text = null;
+            txtCatDesc.Text = null;
+            pnlNewCat.Visible = false;
+            toolStripMessage.Text = msg;
+            PopulateTreeView();
+            //update the recent files menu
+
+            LabelCurrentCat = Globals.curCatName;
+        }
+
+        private void txtFilePath_Click(object sender, EventArgs e)
+        {
+            txtFilePath.Text = GetCatalogueLoc();
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            txtFilePath.Text = null;
+            txtCatName.Text = null;
+            txtCatDesc.Text = null;
+            pnlNewCat.Visible = false;
+            toolStripMessage.Text = null;
 
         }
     }

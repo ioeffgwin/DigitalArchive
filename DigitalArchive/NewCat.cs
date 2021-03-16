@@ -48,7 +48,7 @@ namespace DigitalArchive
                         //create DACAT folder for catalogue to sit in
                         Directory.CreateDirectory(txtFilePath.Text + "\\DACAT");
                         //create readme.txt with instructions not to delete!
-                        File.WriteAllText(txtFilePath.Text + "\\DACAT\\ReadMe.txt", "Digital Archive: " + txtCatName.Text + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
+                        File.WriteAllText(txtFilePath.Text + "\\DACAT\\"+ txtCatName.Text.Replace(' ','_') + "ReadMe.txt", DateTime.Today.ToString() + "\r\nDigital Archive: " + txtCatName.Text + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
                         //full path for catalogue
                         CatUUID = txtFilePath.Text + "\\DACAT\\" + myGuid + ".dacat";
                         //create cataloge and connection
@@ -57,10 +57,10 @@ namespace DigitalArchive
                         //populate the database with tables
                         string sql = "CREATE TABLE tblCatalogue(catName       VARCHAR(120) UNIQUE NOT NULL, " +
                                "catUUID       VARCHAR(255)  UNIQUE  NOT NULL, " +
-                               "catCreated    DATE          NOT NULL UNIQUE, " +
+                               "catCreated    DATETIME          NOT NULL UNIQUE, " +
                                "catDesc       VARCHAR(255) UNIQUE NOT NULL, " +
-                               "catVersion    VARCHAR(10)  UNIQUE NOT NULL, " +
-                               "catLastUpdate DATE          UNIQUE NOT NULL " +
+                               "catVersion    VARCHAR(18)  UNIQUE NOT NULL, " +
+                               "catLastUpdate DATETIME          UNIQUE NOT NULL " +
                                "); ";
                         sql += "CREATE TABLE tblItems (" +
                               "itemID INTEGER       PRIMARY KEY ASC AUTOINCREMENT NOT NULL UNIQUE, " +
@@ -88,7 +88,7 @@ namespace DigitalArchive
                             "logDateTime   DATETIME NOT NULL, " +
                             "logChangedBy VARCHAR(15)  NOT NULL, " +
                             "logChangeDets VARCHAR(1024) NOT NULL, " +
-                            "logCatVersion VARCHAR(10)   NOT NULL " +
+                            "logCatVersion VARCHAR(16)   NOT NULL " +
                             "); ";
                         SQLiteCommand command = new SQLiteCommand(sql, dbConn);
                         command.ExecuteNonQuery();
@@ -104,42 +104,23 @@ namespace DigitalArchive
                         command.ExecuteNonQuery();
                         dbConn.Close();
                         // add data to digarch.dacat to update with latest catalogue
-                        SetLatestCatalogue(CatUUID, txtCatName.Text);
+                        Catalogue curCat = new Catalogue(CatUUID);
 
                         // update info on screen
-                        lblGuid.Text = "Catalogue " + CatUUID + " has been created";
+                        lblGuid.Text = "Catalogue " + curCat.catUUID + " has been created";
 
-                        MainForm frm = new MainForm();
-                        frm.LabelCurrentCat = "Current Catalogue: " + txtCatName.Text; ;
+                        //MainForm.LabelCurrentCat = "Current Catalogue: " + Globals.curCatName;
+                        
                         //close form
                         this.Close();
                     }
                     else
                     {
-                        lblGuid.Text = "You must choose a location for the catalogue and enter a name between 5 and 120 characters and description between 10 and 255 characters";
+                        lblGuid.Text = "You must choose a location for the catalogue \r\nand enter a name between 5 and 120 characters \r\nand description between 10 and 255 characters";
                     }
 
                 }
 
-            }
-        }
-
-        static void SetLatestCatalogue(string catNum, string catName)
-        {
-            // update tblAppSystemb(no where clause as only one line should be in use)
-            string sqlu = "UPDATE tblAppSystem SET LastCatalogue = '" + catNum + "'; ";
-            // insert tblCatsOpened
-            string sqli = "INSERT INTO tblCatsOpened (catUUID, catName, catDateOpened, catPath) " +
-                "VALUES ('" + catNum + "','" + catName + "','" + DateTime.Now + "','\test\');";
-
-            using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
-            {
-                conn.Open();
-                using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu + sqli, conn))
-                {
-                    sql_cmd.ExecuteNonQuery();
-                }
-                conn.Close();
             }
         }
 
@@ -204,6 +185,11 @@ namespace DigitalArchive
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void txtFilePath_TextChanged_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

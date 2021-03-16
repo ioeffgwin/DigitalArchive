@@ -69,7 +69,7 @@ namespace DigitalArchive
 
                 string sql = "CREATE TABLE tblAppSystem ( " +
                 "UUID          TEXT (255)    UNIQUE ON CONFLICT ROLLBACK NOT NULL, " +
-                "AppInstalled  DATE         NOT NULL, " +
+                "AppInstalled  DATETIME         NOT NULL, " +
                 "LastCatalogue TEXT (40), " +
                 "userName      VARCHAR (15) NOT NULL " +
                 "); " +
@@ -77,7 +77,7 @@ namespace DigitalArchive
                 "catsOpenedID  INTEGER    PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
                 "catUUID       TEXT (255)  NOT NULL, " +
                 "catName       TEXT (120) NOT NULL, " +
-                "catDateOpened DATE       NOT NULL, " +
+                "catDateOpened DATETIME       NOT NULL, " +
                 "catPath       TEXT (255) NOT NULL " +
                 "); " +
                 "CREATE TABLE tblChangeLog ( " +

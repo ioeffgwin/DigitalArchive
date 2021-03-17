@@ -30,8 +30,8 @@ namespace DigitalArchive
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.Button btnGetFolder;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.txtUsersName = new System.Windows.Forms.TextBox();
             this.lblUsersName = new System.Windows.Forms.Label();
             this.btnUsersName = new System.Windows.Forms.Button();
@@ -53,33 +53,48 @@ namespace DigitalArchive
             this.treeViewCat = new System.Windows.Forms.TreeView();
             this.mainImageList = new System.Windows.Forms.ImageList(this.components);
             this.pnlNewCat = new System.Windows.Forms.Panel();
+            this.lblNewCat = new System.Windows.Forms.Label();
+            this.btnCancelNew = new System.Windows.Forms.Button();
             this.lblFilePath = new System.Windows.Forms.Label();
             this.txtFilePath = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.lblCatDesc = new System.Windows.Forms.Label();
             this.lblCatName = new System.Windows.Forms.Label();
             this.txtCatDesc = new System.Windows.Forms.TextBox();
             this.txtCatName = new System.Windows.Forms.TextBox();
             this.btnGetGuid = new System.Windows.Forms.Button();
-            this.btnCancelNew = new System.Windows.Forms.Button();
+            this.epName = new System.Windows.Forms.ErrorProvider(this.components);
+            this.btnScanChanges = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.pnlNewCat.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.epName)).BeginInit();
             this.SuspendLayout();
+            // 
+            // btnGetFolder
+            // 
+            btnGetFolder.Location = new System.Drawing.Point(639, 68);
+            btnGetFolder.Name = "btnGetFolder";
+            btnGetFolder.Size = new System.Drawing.Size(33, 32);
+            btnGetFolder.TabIndex = 23;
+            btnGetFolder.Text = "...";
+            btnGetFolder.UseVisualStyleBackColor = true;
+            btnGetFolder.Click += new System.EventHandler(this.btnGetFolder_Click);
             // 
             // txtUsersName
             // 
-            this.txtUsersName.Location = new System.Drawing.Point(787, 5);
+            this.txtUsersName.Location = new System.Drawing.Point(752, 5);
             this.txtUsersName.Name = "txtUsersName";
             this.txtUsersName.Size = new System.Drawing.Size(323, 26);
             this.txtUsersName.TabIndex = 8;
             this.txtUsersName.Visible = false;
+            this.txtUsersName.Validating += new System.ComponentModel.CancelEventHandler(this.txtUsersName_Validating);
             // 
             // lblUsersName
             // 
             this.lblUsersName.AutoSize = true;
-            this.lblUsersName.Location = new System.Drawing.Point(624, 8);
+            this.lblUsersName.Location = new System.Drawing.Point(588, 8);
             this.lblUsersName.Name = "lblUsersName";
             this.lblUsersName.Size = new System.Drawing.Size(157, 20);
             this.lblUsersName.TabIndex = 9;
@@ -101,7 +116,7 @@ namespace DigitalArchive
             // lblGuid
             // 
             this.lblGuid.AutoSize = true;
-            this.lblGuid.Location = new System.Drawing.Point(251, 296);
+            this.lblGuid.Location = new System.Drawing.Point(251, 230);
             this.lblGuid.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblGuid.Name = "lblGuid";
             this.lblGuid.Size = new System.Drawing.Size(0, 20);
@@ -109,7 +124,6 @@ namespace DigitalArchive
             // 
             // mnuStrip
             // 
-            this.mnuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.mnuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.mnuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applicationToolStripMenuItem,
@@ -158,28 +172,28 @@ namespace DigitalArchive
             // addCatalogueToolStripMenuItem
             // 
             this.addCatalogueToolStripMenuItem.Name = "addCatalogueToolStripMenuItem";
-            this.addCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.addCatalogueToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.addCatalogueToolStripMenuItem.Text = "New Catalogue";
             this.addCatalogueToolStripMenuItem.Click += new System.EventHandler(this.addCatalogueToolStripMenuItem_Click);
             // 
             // openCatalogueToolStripMenuItem
             // 
             this.openCatalogueToolStripMenuItem.Name = "openCatalogueToolStripMenuItem";
-            this.openCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openCatalogueToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.openCatalogueToolStripMenuItem.Text = "Open Catalogue";
             this.openCatalogueToolStripMenuItem.Click += new System.EventHandler(this.openCatalogueToolStripMenuItem_Click);
             // 
             // openRecentToolStripMenuItem
             // 
             this.openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
-            this.openRecentToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openRecentToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.openRecentToolStripMenuItem.Text = "Open Recent";
             this.openRecentToolStripMenuItem.Click += new System.EventHandler(this.openRecentToolStripMenuItem_Click);
             // 
             // editCatalogueToolStripMenuItem
             // 
             this.editCatalogueToolStripMenuItem.Name = "editCatalogueToolStripMenuItem";
-            this.editCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.editCatalogueToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.editCatalogueToolStripMenuItem.Text = "Edit Catalogue";
             // 
             // statusStrip1
@@ -219,7 +233,7 @@ namespace DigitalArchive
             this.btnCancelUsersName.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnCancelUsersName.Font = new System.Drawing.Font("Aharoni", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.btnCancelUsersName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.btnCancelUsersName.Location = new System.Drawing.Point(591, 1);
+            this.btnCancelUsersName.Location = new System.Drawing.Point(555, 1);
             this.btnCancelUsersName.Name = "btnCancelUsersName";
             this.btnCancelUsersName.Size = new System.Drawing.Size(31, 30);
             this.btnCancelUsersName.TabIndex = 16;
@@ -230,9 +244,9 @@ namespace DigitalArchive
             // 
             // treeViewCat
             // 
-            this.treeViewCat.Location = new System.Drawing.Point(5, 36);
+            this.treeViewCat.Location = new System.Drawing.Point(5, 78);
             this.treeViewCat.Name = "treeViewCat";
-            this.treeViewCat.Size = new System.Drawing.Size(330, 621);
+            this.treeViewCat.Size = new System.Drawing.Size(330, 579);
             this.treeViewCat.TabIndex = 17;
             this.treeViewCat.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewCat_BeforeExpand);
             this.treeViewCat.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewCat_AfterSelect);
@@ -249,11 +263,11 @@ namespace DigitalArchive
             // 
             // pnlNewCat
             // 
+            this.pnlNewCat.Controls.Add(this.lblNewCat);
             this.pnlNewCat.Controls.Add(this.btnCancelNew);
             this.pnlNewCat.Controls.Add(btnGetFolder);
             this.pnlNewCat.Controls.Add(this.lblFilePath);
             this.pnlNewCat.Controls.Add(this.txtFilePath);
-            this.pnlNewCat.Controls.Add(this.label1);
             this.pnlNewCat.Controls.Add(this.lblCatDesc);
             this.pnlNewCat.Controls.Add(this.lblCatName);
             this.pnlNewCat.Controls.Add(this.txtCatDesc);
@@ -262,24 +276,35 @@ namespace DigitalArchive
             this.pnlNewCat.Controls.Add(this.lblGuid);
             this.pnlNewCat.Location = new System.Drawing.Point(349, 40);
             this.pnlNewCat.Name = "pnlNewCat";
-            this.pnlNewCat.Size = new System.Drawing.Size(729, 492);
+            this.pnlNewCat.Size = new System.Drawing.Size(771, 453);
             this.pnlNewCat.TabIndex = 18;
             this.pnlNewCat.Visible = false;
             // 
-            // btnGetFolder
+            // lblNewCat
             // 
-            btnGetFolder.Location = new System.Drawing.Point(639, 105);
-            btnGetFolder.Name = "btnGetFolder";
-            btnGetFolder.Size = new System.Drawing.Size(33, 32);
-            btnGetFolder.TabIndex = 23;
-            btnGetFolder.Text = "...";
-            btnGetFolder.UseVisualStyleBackColor = true;
-            btnGetFolder.Click += new System.EventHandler(this.btnGetFolder_Click);
+            this.lblNewCat.AutoSize = true;
+            this.lblNewCat.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNewCat.Location = new System.Drawing.Point(8, 21);
+            this.lblNewCat.Name = "lblNewCat";
+            this.lblNewCat.Size = new System.Drawing.Size(247, 29);
+            this.lblNewCat.TabIndex = 25;
+            this.lblNewCat.Text = "Create new catalogue";
+            // 
+            // btnCancelNew
+            // 
+            this.btnCancelNew.Location = new System.Drawing.Point(367, 284);
+            this.btnCancelNew.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnCancelNew.Name = "btnCancelNew";
+            this.btnCancelNew.Size = new System.Drawing.Size(201, 35);
+            this.btnCancelNew.TabIndex = 24;
+            this.btnCancelNew.Text = "cancel";
+            this.btnCancelNew.UseVisualStyleBackColor = true;
+            this.btnCancelNew.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // lblFilePath
             // 
             this.lblFilePath.AutoSize = true;
-            this.lblFilePath.Location = new System.Drawing.Point(22, 110);
+            this.lblFilePath.Location = new System.Drawing.Point(22, 74);
             this.lblFilePath.Name = "lblFilePath";
             this.lblFilePath.Size = new System.Drawing.Size(119, 20);
             this.lblFilePath.TabIndex = 22;
@@ -288,25 +313,17 @@ namespace DigitalArchive
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(151, 107);
+            this.txtFilePath.Location = new System.Drawing.Point(151, 71);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(483, 26);
             this.txtFilePath.TabIndex = 21;
             this.txtFilePath.Click += new System.EventHandler(this.txtFilePath_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(147, 133);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 20);
-            this.label1.TabIndex = 20;
+            this.txtFilePath.Validating += new System.ComponentModel.CancelEventHandler(this.txtFilePath_Validating);
             // 
             // lblCatDesc
             // 
             this.lblCatDesc.AutoSize = true;
-            this.lblCatDesc.Location = new System.Drawing.Point(52, 232);
+            this.lblCatDesc.Location = new System.Drawing.Point(52, 166);
             this.lblCatDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCatDesc.Name = "lblCatDesc";
             this.lblCatDesc.Size = new System.Drawing.Size(89, 20);
@@ -316,7 +333,7 @@ namespace DigitalArchive
             // lblCatName
             // 
             this.lblCatName.AutoSize = true;
-            this.lblCatName.Location = new System.Drawing.Point(13, 172);
+            this.lblCatName.Location = new System.Drawing.Point(13, 121);
             this.lblCatName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCatName.Name = "lblCatName";
             this.lblCatName.Size = new System.Drawing.Size(128, 20);
@@ -325,24 +342,28 @@ namespace DigitalArchive
             // 
             // txtCatDesc
             // 
-            this.txtCatDesc.Location = new System.Drawing.Point(151, 232);
+            this.txtCatDesc.Location = new System.Drawing.Point(151, 165);
             this.txtCatDesc.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCatDesc.Multiline = true;
             this.txtCatDesc.Name = "txtCatDesc";
             this.txtCatDesc.Size = new System.Drawing.Size(564, 90);
             this.txtCatDesc.TabIndex = 17;
+            this.txtCatDesc.Validating += new System.ComponentModel.CancelEventHandler(this.txtCatDesc_Validating);
+            this.txtCatDesc.Validated += new System.EventHandler(this.txtCatDesc_Validated);
             // 
             // txtCatName
             // 
-            this.txtCatName.Location = new System.Drawing.Point(151, 172);
+            this.txtCatName.Location = new System.Drawing.Point(151, 118);
             this.txtCatName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCatName.Name = "txtCatName";
             this.txtCatName.Size = new System.Drawing.Size(199, 26);
             this.txtCatName.TabIndex = 16;
+            this.txtCatName.Validating += new System.ComponentModel.CancelEventHandler(this.txtCatName_Validating);
             // 
             // btnGetGuid
             // 
-            this.btnGetGuid.Location = new System.Drawing.Point(149, 352);
+            this.btnGetGuid.Enabled = false;
+            this.btnGetGuid.Location = new System.Drawing.Point(149, 284);
             this.btnGetGuid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnGetGuid.Name = "btnGetGuid";
             this.btnGetGuid.Size = new System.Drawing.Size(201, 35);
@@ -351,22 +372,36 @@ namespace DigitalArchive
             this.btnGetGuid.UseVisualStyleBackColor = true;
             this.btnGetGuid.Click += new System.EventHandler(this.btnGetGuid_Click);
             // 
-            // btnCancelNew
+            // epName
             // 
-            this.btnCancelNew.Location = new System.Drawing.Point(367, 352);
-            this.btnCancelNew.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnCancelNew.Name = "btnCancelNew";
-            this.btnCancelNew.Size = new System.Drawing.Size(201, 35);
-            this.btnCancelNew.TabIndex = 24;
-            this.btnCancelNew.Text = "cancel";
-            this.btnCancelNew.UseVisualStyleBackColor = true;
-            this.btnCancelNew.Click += new System.EventHandler(this.button1_Click_1);
+            this.epName.ContainerControl = this;
+            // 
+            // btnScanChanges
+            // 
+            this.btnScanChanges.Location = new System.Drawing.Point(5, 36);
+            this.btnScanChanges.Name = "btnScanChanges";
+            this.btnScanChanges.Size = new System.Drawing.Size(172, 35);
+            this.btnScanChanges.TabIndex = 19;
+            this.btnScanChanges.Text = "Scan for Changes";
+            this.btnScanChanges.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(543, 576);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 20;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnScanChanges);
             this.Controls.Add(this.pnlNewCat);
             this.Controls.Add(this.treeViewCat);
             this.Controls.Add(this.btnCancelUsersName);
@@ -387,6 +422,7 @@ namespace DigitalArchive
             this.statusStrip1.PerformLayout();
             this.pnlNewCat.ResumeLayout(false);
             this.pnlNewCat.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.epName)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -416,13 +452,16 @@ namespace DigitalArchive
         private System.Windows.Forms.Panel pnlNewCat;
         private System.Windows.Forms.Label lblFilePath;
         private System.Windows.Forms.TextBox txtFilePath;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblCatDesc;
         private System.Windows.Forms.Label lblCatName;
         private System.Windows.Forms.TextBox txtCatDesc;
         private System.Windows.Forms.TextBox txtCatName;
         private System.Windows.Forms.Button btnGetGuid;
         private System.Windows.Forms.Button btnCancelNew;
+        private System.Windows.Forms.Label lblNewCat;
+        private System.Windows.Forms.ErrorProvider epName;
+        private System.Windows.Forms.Button btnScanChanges;
+        private System.Windows.Forms.Button button1;
     }
 }
 

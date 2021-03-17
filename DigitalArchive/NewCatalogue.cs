@@ -10,7 +10,7 @@ using System.IO;
 
 namespace DigitalArchive
 {
-    public class NewCatalogue
+    public class NewCatalogue 
     {
         public String retMessage;
 
@@ -24,8 +24,6 @@ namespace DigitalArchive
                 }
                 catch (NotImplementedException notImp)
                 {
-                    DialogResult dlgResult = MessageBox.Show("Are you sure you want to create a new catalogue?", notImp.Message,
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     Boolean bName = false;
                     Boolean bDesc = false;
                     Boolean bDir = false;
@@ -36,7 +34,7 @@ namespace DigitalArchive
                     if (catName.Length > 5 && catName.Length < 121) bName = true;
                     if (catDesc.Length > 10 && catDesc.Length < 256) bDesc = true;
 
-                    if (dlgResult == DialogResult.Yes && bDir == true && bName == true && bDesc == true)
+                    if (bDir == true && bName == true && bDesc == true)
                     {
                         //create unique file name for catalogue
                         string myGuid = System.Guid.NewGuid().ToString();
@@ -87,10 +85,12 @@ namespace DigitalArchive
                             "); ";
                         SQLiteCommand command = new SQLiteCommand(sql, dbConn);
                         command.ExecuteNonQuery();
+                        DateTime theDate = DateTime.Now;
+                        string newVersion = theDate.ToString("yyyyMMddHHmmssFFF");
                         //Insert startup information into tables
                         sql = "INSERT INTO tblCatalogue VALUES ('" + catName +
                             "', '" + CatUUID + "', '" + DateTime.Now +
-                            "', '" + catDesc + "', '1.0', '" + DateTime.Now + "'); ";
+                            "', '" + catDesc + "', '"+newVersion+"', '" + theDate + "'); ";
                         //these are the types of Metadata we want to store (keywords can be added)
                         sql += "INSERT INTO tbllkpMetaFormat (metaTitle)" +
                             "VALUES ('TYPE OF FILE'), ('NAME'), ('SIZE'), ('CREATED'), ('MODIFIED'), ('READ ONLY'), ('LOCATION'), " +

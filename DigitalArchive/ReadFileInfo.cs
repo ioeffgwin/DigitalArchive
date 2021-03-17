@@ -4,7 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
-
+using System.Windows;
+using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using System.IO;
+//using MetadataExtractor;
+//using MetadataExtractor.Formats.Exif;
 
 
 namespace DigitalArchive
@@ -25,7 +30,70 @@ namespace DigitalArchive
 
 
         //filename
+        public void GetFileInfo(string filePath)
+        {
+            if( filePath.Length == 0) filePath = @"D:\temp\example.jpg";
+            FileAttributes attributes = File.GetAttributes(filePath);
+            //Is it a directory
+            Boolean fileDir = false;
+            if ((attributes & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                fileDir = true;
+            }
+            //is it a system file
+            Boolean fileSystem = false;
+            if ((attributes & FileAttributes.System) == FileAttributes.System)
+            {
+                fileSystem = true;
+            }
+            // Read and Write:
+            string fileReadOnly;
+            if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+            {
+                fileReadOnly = "Yes";
+            }
+            else
+            {
+                fileReadOnly = "No";
+            }
+            string fileHidden;
+            if ((attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+            {
+                fileHidden = "Yes";
+            }
+            else
+            {
+                fileHidden = "No";
+            }
 
+            string fileLocation = Path.GetDirectoryName(filePath);
+
+            var file = ShellFile.FromFilePath(filePath);
+            string fileDateCreated = file.Properties.System.DateCreated.Value.ToString();
+            string fileDateModified = file.Properties.System.DateModified.Value.ToString();
+            string fileType = file.Properties.System.FileExtension.Value;
+            string fileName = file.Properties.System.FileName.Value;
+            string fileSize = file.Properties.System.Size.Value.ToString();
+            string fileDateTaken = file.Properties.System.ItemDate.Value.ToString();
+            string fileHash = file.Properties.System.GetHashCode().ToString();
+
+            /* this will only work for pics and movies
+            var directories = ImageMetadataReader.ReadMetadata(filePath);
+            var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+            var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTime);
+            */
+            /* this doesn't work. Not sure why
+            string[] fileKeywords = file.Properties.System.Keywords.Value; //null
+            string fileKeyword = String.Join(",", fileKeywords);
+            string[] fileAuthors = file.Properties.System.Author.Value;
+            string fileAuthor = String.Join(",", fileAuthors);
+            */
+
+            //hashing and chceksum - what value etc?
+
+
+
+        }
 
         //filepath
 

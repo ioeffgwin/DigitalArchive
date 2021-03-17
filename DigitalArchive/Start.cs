@@ -664,6 +664,106 @@ namespace DigitalArchive
             toolStripMessage.Text = null;
 
         }
+
+        private void txtCatName_Validating(object sender, CancelEventArgs e)
+        {
+            if(txtCatName.Text.Length < 5 || txtCatName.Text.Length > 120)
+            {
+                epName.SetError(txtCatName, "Name must be between 5 and 120 characters");
+                bNewCatNameOK = false;
+
+            }
+            else
+            {
+                epName.SetError(txtCatName, String.Empty);
+                bNewCatNameOK = true;
+            }
+            btnGetGuid_Enable();
+        }
+
+        private void txtCatDesc_Validating(object sender, CancelEventArgs e)
+        {
+            if (txtCatDesc.Text.Length < 10 || txtCatDesc.Text.Length > 255)
+            {
+                epName.SetError(txtCatDesc, "Name must be between 10 and 255 characters");
+                bNewCatDescOK = false;
+
+            }
+            else
+            {
+                epName.SetError(txtCatDesc, String.Empty);
+                bNewCatDescOK = true;
+            }
+            btnGetGuid_Enable();
+
+        }
+
+        private void txtFilePath_Validating(object sender, CancelEventArgs e)
+        {
+            if(txtFilePath.Text.Length > 4)
+            {
+
+                DirectoryInfo di = new DirectoryInfo(txtFilePath.Text);
+                if (di.Exists)
+                {
+                    epName.SetError(txtFilePath, String.Empty);
+                    bNewCatPathOK = true;
+                }
+                else
+                {
+                    epName.SetError(txtFilePath, "File Path doesn't exist");
+                    bNewCatPathOK = false;
+
+                }
+            }
+            btnGetGuid_Enable();
+
+        }
+
+        private void txtUsersName_Validating(object sender, CancelEventArgs e)
+        {
+            {
+                if (txtUsersName.Text.Length < 3 || txtUsersName.Text.Length > 15)
+                {
+                    epName.SetError(txtUsersName, "Name must be between 10 and 255 characters");
+                }
+                else
+                {
+                    epName.SetError(txtUsersName, String.Empty);
+                }
+
+            }
+
+        }
+
+        Boolean bNewCatNameOK = false;
+        Boolean bNewCatDescOK = false;
+        Boolean bNewCatPathOK = false;
+
+        
+
+        private void btnGetGuid_Enable()
+        {
+            if(bNewCatPathOK==true && bNewCatNameOK==true && bNewCatDescOK == true)
+            {
+                btnGetGuid.Enabled = true;
+            }
+            else
+            {
+                btnGetGuid.Enabled = false;
+            }
+        }
+
+        private void txtCatDesc_Validated(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            ReadFileInfo fileInfo = new ReadFileInfo();
+            fileInfo.GetFileInfo("");
+        }
     }
 }
 

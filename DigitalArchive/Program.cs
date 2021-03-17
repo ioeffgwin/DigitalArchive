@@ -15,7 +15,7 @@ namespace DigitalArchive
         /// </summary>
         [STAThread]
         static void Main( string[] args )
-        {
+       {
 
             Globals.OpenArgs = args;
 

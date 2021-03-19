@@ -126,7 +126,9 @@
   <ItemGroup>
     <Compile Include="Catalogue.cs" />
     <Compile Include="ChangeLog.cs" />
-    <Compile Include="CatalogueUpdate.cs" />
+    <Compile Include="CatalogueItemUpdate.cs" />
+    <Compile Include="CatalogueItemMetaUpdate.cs" />
+    <Compile Include="CheckSum.cs" />
     <Compile Include="NewCatalogue.cs" />
     <Compile Include="ReadFileInfo.cs" />
     <Compile Include="Globals.cs" />

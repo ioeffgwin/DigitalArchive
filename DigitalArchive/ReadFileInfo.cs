@@ -16,8 +16,9 @@ namespace DigitalArchive
 {
 
     /*
-     * Jeff Vincent v1
-     * https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-get-information-about-files-folders-and-drives
+     * Jeff Vincent 
+     * get meta info from files
+     * 
      * 
      * 
      * 
@@ -27,169 +28,124 @@ namespace DigitalArchive
 
     public class ReadFileInfo
     {
+        /*
+         * J Vincent
+         * Read the meta data from the file 
+         * 
+         * not all data yet available so default values set on some
+         * for meta items if null they won't be added to catalogue
+         * 
+         * 
+         */
+
+        public Boolean fileDir; //is it a directory - no need to save if true
+        public Boolean fileSystem; //is it a system file - no need to save if true
+
+        public string fileName; // file.Properties.System.FileName.Value;  //tblItems
+        public string fileLocation; //path of the file - should be from root of catalogue //tblItems
+        public byte[] fileHash; // file.Properties.System.GetHashCode().ToString();  //tblItems
+        public string fileOwner = ""; // this is not a mandatory field but an empty string may handle better than null  //tblItems
+        public Boolean fileCopyright = default; // is the file subject to copyright default false  //tblItems
+        public Boolean fileGDPR = default; // is the file subject to GDPR default false  //tblItems
+
+        public string fileMetaReadOnly; // Yes or No
+        public string fileMetaHidden; //Yes or No
+        public string fileMetaDateCreated; //file.Properties.System.DateCreated.Value.ToString();
+        public string fileMetaDateModified; // file.Properties.System.DateModified.Value.ToString();
+        public string fileMetaType; // file.Properties.System.FileExtension.Value;
+        public string fileMetaSize; //file.Properties.System.Size.Value.ToString();
+        public string fileMetaDateTaken; // file.Properties.System.ItemDate.Value.ToString();
+        public string fileMetaAuthor; //ideally from author keyword
+        public string fileMetaKeyword; // string with comma delimted keywords. ideally from file keywords
+        
 
 
-        //filename
+
         public void GetFileInfo(string filePath)
         {
-            if( filePath.Length == 0) filePath = @"D:\temp\example.jpg";
-            FileAttributes attributes = File.GetAttributes(filePath);
-            //Is it a directory
-            Boolean fileDir = false;
-            if ((attributes & FileAttributes.Directory) == FileAttributes.Directory)
+            try
             {
-                fileDir = true;
+
+
+                FileAttributes attributes = File.GetAttributes(filePath);
+                //Is it a directory
+                this.fileDir = false;
+                if ((attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                {
+                    this.fileDir = true;
+                }
+                //is it a system file
+                this.fileSystem = false;
+                if ((attributes & FileAttributes.System) == FileAttributes.System)
+                {
+                    this.fileSystem = true;
+                }
+                if (this.fileDir == false)
+                {
+                    // Read and Write:
+                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        this.fileMetaReadOnly = "Yes";
+                    }
+                    else
+                    {
+                        this.fileMetaReadOnly = "No";
+                    }
+                    // hidden file
+                    if ((attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                    {
+                        this.fileMetaHidden = "Yes";
+                    }
+                    else
+                    {
+                        this.fileMetaHidden = "No";
+                    }
+                    this.fileLocation = Path.GetDirectoryName(filePath);
+
+                    var file = ShellFile.FromFilePath(filePath);
+                    //date created
+                    this.fileMetaDateCreated = file.Properties.System.DateCreated.Value.ToString();
+                    //date modified
+                    this.fileMetaDateModified = file.Properties.System.DateModified.Value.ToString();
+                    //type of file (extension)
+                    this.fileMetaType = file.Properties.System.FileExtension.Value;
+                    //filename
+                    this.fileName = file.Properties.System.FileName.Value;
+                    //filesize in bytes
+                    this.fileMetaSize = file.Properties.System.Size.Value.ToString();
+                    //date taken (might be null)
+                    this.fileMetaDateTaken = file.Properties.System.ItemDate.Value.ToString();
+                    //file hash sha-256
+                    this.fileHash = CheckSum.Main(filePath);
+
+                    /* this will only work for pics and movies
+                    var directories = ImageMetadataReader.ReadMetadata(filePath);
+                    var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                    var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTime);
+                    */
+
+                    //file authors
+                    //file keywords
+
+                    /* this doesn't work. Not sure why
+                    string[] fileMetaKeywords = file.Properties.System.Keywords.Value; //null
+                    this.fileMetaKeyword = String.Join(",", fileKeywords);
+                    string[] fileMetaAuthors = file.Properties.System.Author.Value;
+                    this.fileMetaAuthor = String.Join(",", fileMetaAuthors);
+                    */
+                }
+
             }
-            //is it a system file
-            Boolean fileSystem = false;
-            if ((attributes & FileAttributes.System) == FileAttributes.System)
+            catch (Exception ex)
             {
-                fileSystem = true;
-            }
-            // Read and Write:
-            string fileReadOnly;
-            if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-            {
-                fileReadOnly = "Yes";
-            }
-            else
-            {
-                fileReadOnly = "No";
-            }
-            string fileHidden;
-            if ((attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
-            {
-                fileHidden = "Yes";
-            }
-            else
-            {
-                fileHidden = "No";
+                throw ex;
             }
 
-            string fileLocation = Path.GetDirectoryName(filePath);
-
-            var file = ShellFile.FromFilePath(filePath);
-            string fileDateCreated = file.Properties.System.DateCreated.Value.ToString();
-            string fileDateModified = file.Properties.System.DateModified.Value.ToString();
-            string fileType = file.Properties.System.FileExtension.Value;
-            string fileName = file.Properties.System.FileName.Value;
-            string fileSize = file.Properties.System.Size.Value.ToString();
-            string fileDateTaken = file.Properties.System.ItemDate.Value.ToString();
-            string fileHash = file.Properties.System.GetHashCode().ToString();
-
-            /* this will only work for pics and movies
-            var directories = ImageMetadataReader.ReadMetadata(filePath);
-            var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-            var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTime);
-            */
-            /* this doesn't work. Not sure why
-            string[] fileKeywords = file.Properties.System.Keywords.Value; //null
-            string fileKeyword = String.Join(",", fileKeywords);
-            string[] fileAuthors = file.Properties.System.Author.Value;
-            string fileAuthor = String.Join(",", fileAuthors);
-            */
-
-            //hashing and chceksum - what value etc?
 
 
 
         }
 
-        //filepath
-
-
-        //size
-
-
-        //checksum
-
-
-        //metadata
-
-
-        public static void ReadFiles()
-        {
-            string myDrive = @"D:\Public\Photos\Cosmeston";
-
-
-            // You can also use System.Environment.GetLogicalDrives to
-            // obtain names of all logical drives on the computer.
-            System.IO.DriveInfo di = new System.IO.DriveInfo(myDrive);
-            Console.WriteLine(di.TotalFreeSpace);
-            Console.WriteLine(di.VolumeLabel);
-
-            // Get the root directory and print out some information about it.
-            System.IO.DirectoryInfo dirInfo = di.RootDirectory;
-            Console.WriteLine(dirInfo.Attributes.ToString());
-
-            // Get the files in the directory and print out some information about them.
-            System.IO.FileInfo[] fileNames = dirInfo.GetFiles("*.*");
-
-            foreach (System.IO.FileInfo fi in fileNames)
-            {
-                Console.WriteLine("{0}: {1}: {2}", fi.Name, fi.LastAccessTime, fi.Length);
-            }
-
-            // Get the subdirectories directly that is under the root.
-            // See "How to: Iterate Through a Directory Tree" for an example of how to
-            // iterate through an entire tree.
-            System.IO.DirectoryInfo[] dirInfos = dirInfo.GetDirectories("*.*");
-
-            foreach (System.IO.DirectoryInfo d in dirInfos)
-            {
-                Console.WriteLine(d.Name);
-            }
-
-            // The Directory and File classes provide several static methods
-            // for accessing files and directories.
-
-            // Get the current application directory.
-            string currentDirName = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine(currentDirName);
-
-            // Get an array of file names as strings rather than FileInfo objects.
-            // Use this method when storage space is an issue, and when you might
-            // hold on to the file name reference for a while before you try to access
-            // the file.
-            //string[] files = System.IO.Directory.GetFiles(currentDirName, "*.*");
-            string[] files = System.IO.Directory.GetFiles(myDrive, "*.*");
-
-            foreach (string s in files)
-            {
-                // Create the FileInfo object only when needed to ensure
-                // the information is as current as possible.
-                System.IO.FileInfo fi = null;
-                try
-                {
-                    fi = new System.IO.FileInfo(s);
-                }
-                catch (System.IO.FileNotFoundException e)
-                {
-                    // To inform the user and continue is
-                    // sufficient for this demonstration.
-                    // Your application may require different behavior.
-                    Console.WriteLine(e.Message);
-                    continue;
-                }
-                Console.WriteLine("{0} : {1}", fi.Name, fi.Directory);
-            }
-
-            // Change the directory. In this case, first check to see
-            // whether it already exists, and create it if it does not.
-            // If this is not appropriate for your application, you can
-            // handle the System.IO.IOException that will be raised if the
-            // directory cannot be found.
-            if (!System.IO.Directory.Exists(myDrive))
-            {
-                System.IO.Directory.CreateDirectory(myDrive);
-            }
-
-            System.IO.Directory.SetCurrentDirectory(myDrive);
-
-            currentDirName = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine(currentDirName);
-
-        }
     }
 
 

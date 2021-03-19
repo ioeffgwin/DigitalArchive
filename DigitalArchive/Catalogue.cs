@@ -12,7 +12,15 @@ namespace DigitalArchive
 {
     public class Catalogue
     {
-        // Jeff Vincent v1.0
+        /*
+         * J Vincent
+         * Opens catalogue and sets global variables for use
+         * 
+         * 
+         * 
+         * 
+         */
+
         public string catUUID; //40 
         public string catName; //120
         public string catDesc; //255
@@ -24,8 +32,6 @@ namespace DigitalArchive
         public Catalogue(string catPath)
         {
             //check if path is valid
-
-            //get details of current catalogue to use 
 
             if (File.Exists(catPath))
                 {
@@ -39,6 +45,7 @@ namespace DigitalArchive
                     sql_cmd = cat_Conn.CreateCommand();
                     sql_cmd.CommandText = sql;
 
+                    //get details of current catalogue to use 
                     sqlRead = sql_cmd.ExecuteReader();
                     while (sqlRead.Read())
                     {
@@ -51,20 +58,26 @@ namespace DigitalArchive
                         this.catPath = Path.GetDirectoryName(this.catUUID).Replace("\\DACAT","");
                     }
                     cat_Conn.Close();
+                    //update app to know what the most recent catalogue is
+                    // also add to list of opened catalogues
                     SetLatestCatalogue();
                 }
                 catch (Exception e)
                 {
+                    //let user know chosen catalogue not valid
                     Globals.curCatName = "Catalogue not found.";
                     throw e;
                 }
                 finally
                 {
+                    //set global variables
                     Globals.curCatUUID = this.catUUID;
                     Globals.curCatName = this.catName;
                     Globals.curCatDesc = this.catDesc;
                     Globals.curCatPath = this.catPath;
-                
+                    Globals.curCatVer = this.catVer;
+                    Globals.connCat = "Data Source=" + Globals.curCatUUID + "; Version = 3; ";
+
                 }
 
             }
@@ -104,6 +117,7 @@ namespace DigitalArchive
                 sql_cmd.ExecuteNonQuery();
                 cat_conn.Close();
                 this.catVer = newVersion;
+                Globals.curCatVer = this.catVer;
                 this.catDateLastUpdate = theDate.ToString();
 
             }
@@ -114,7 +128,8 @@ namespace DigitalArchive
         }
 
         public void setCatalogueLastUpdate()
-        { //change Cat last changed date
+        { 
+            //change Cat last changed date
             try
             {
                 DateTime theDate = DateTime.Now;
@@ -137,7 +152,14 @@ namespace DigitalArchive
 
         public void SetLatestCatalogue()
         {
-            // update tblAppSystemb(no where clause as only one line should be in use)
+            /*
+             * J Vincent
+             * Update app to know what most recent catalogue is and into log of opened catalogues
+             * 
+             * 
+             * 
+             */
+            // update tblAppSystemb(there is no Where clause as only one line should be in use)
             string sqlu = "UPDATE tblAppSystem SET LastCatalogue = '" + this.catUUID + "'; ";
             // insert tblCatsOpened
             string sqli = "INSERT INTO tblCatsOpened (catUUID, catName, catDateOpened, catPath) " +

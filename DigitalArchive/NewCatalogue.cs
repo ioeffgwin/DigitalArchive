@@ -12,6 +12,18 @@ namespace DigitalArchive
 {
     public class NewCatalogue 
     {
+
+        /*
+         * J Vincent
+         * 
+         * Create New Catalogue
+         * Creates new catalogue in DACAT sub folder at chosen location
+         * with Name and Description
+         * Creates databas structure and populates with required info
+         * 
+         * 
+         */
+
         public String retMessage;
 
         public NewCatalogue(string catPath, string catName, string catDesc)
@@ -41,7 +53,7 @@ namespace DigitalArchive
                         //create DACAT folder for catalogue to sit in
                         Directory.CreateDirectory(catPath + "\\DACAT");
                         //create readme.txt with instructions not to delete!
-                        File.WriteAllText(catPath + "\\DACAT\\" + catName.Replace(' ', '_') + "ReadMe.txt", DateTime.Today.ToString() + "\r\nDigital Archive: " + catName + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
+                        File.WriteAllText(catPath + "\\DACAT\\" + catName.Replace(' ', '_') + "_ReadMe.txt", DateTime.Today.ToString() + "\r\nDigital Archive: " + catName + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
                         //full path for catalogue
                         CatUUID = catPath + "\\DACAT\\" + myGuid + ".dacat";
                         //create cataloge and connection
@@ -61,7 +73,7 @@ namespace DigitalArchive
                               "itemAddedBy    VARCHAR(50)  NOT NULL, " +
                               "itemName       VARCHAR(255) NOT NULL, " +
                               "itemPath       VARCHAR(255) NOT NULL, " +
-                              "itemChecksum   VARCHAR(150) NOT NULL, " +
+                              "itemChecksum   BLOB(32) NOT NULL, " +
                               "itemLastChange DATETIME NOT NULL, " +
                               "itemOwner      VARCHAR(128), " +
                               "itemCopyright  BOOLEAN NOT NULL DEFAULT(0), " +
@@ -94,7 +106,7 @@ namespace DigitalArchive
                         //these are the types of Metadata we want to store (keywords can be added)
                         sql += "INSERT INTO tbllkpMetaFormat (metaTitle)" +
                             "VALUES ('TYPE OF FILE'), ('NAME'), ('SIZE'), ('CREATED'), ('MODIFIED'), ('READ ONLY'), ('LOCATION'), " +
-                            "('READ-ONLY'), ('HIDDEN'), ('DATE TAKEN'), ('KEYWORDS');";
+                            "('HIDDEN'), ('DATE TAKEN'), ('KEYWORDS');";
                         command = new SQLiteCommand(sql, dbConn);
                         command.ExecuteNonQuery();
                         dbConn.Close();

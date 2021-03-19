@@ -22,7 +22,6 @@ namespace DigitalArchive
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //test to see if first use
-            //Globals.CreateSysConnection();
 
             // Open the connection:
             try
@@ -44,7 +43,7 @@ namespace DigitalArchive
             }
             catch (Exception)
             {
-                //no sys database - run first use screen. Get UserName.
+                //no sys database - run first use screen. Get UserName from PC.
                 string myName = Environment.UserName;
                 Globals.usersName = myName;
                 FirstUse(myName);

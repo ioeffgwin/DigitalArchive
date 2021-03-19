@@ -15,6 +15,24 @@ namespace DigitalArchive
 {
     public partial class MainForm : Form
     {
+
+        /*
+         * J Vincent
+         * Main Form - most (all?) functions originate here
+         * 
+         * 
+         * 
+         * 
+         */
+
+        //used to help validation in new catalogue subform
+        //once they are all true, the catalogue can be created
+        Boolean bNewCatNameOK = false; 
+        Boolean bNewCatDescOK = false;
+        Boolean bNewCatPathOK = false;
+
+
+
         public MainForm()
         {
             InitializeComponent();
@@ -26,10 +44,11 @@ namespace DigitalArchive
             // if no data not used before some data required
             if (Globals.OpenArgs.Length != 0)
             {
+                // is there a catalogue in the command line to open app
                 curCatID = Globals.OpenArgs[0];
             }
             else
-            {
+            {   // get the latest used catalogue from digarch.dacat
                 curCatID = GetLatestCatalogue();
             }
             
@@ -43,6 +62,19 @@ namespace DigitalArchive
             }
 
             //get most 5 recent catalogues
+            GetRecentCatalogues();
+
+
+        }
+
+        protected void GetRecentCatalogues()
+        {
+            /*
+             * J Vincent
+             * Add upto 5 most recent unique catalogues to drop down menu
+             * 
+             */
+
             string sql = "SELECT catName, catUUID, catDateOpened FROM tblCatsOpened GROUP BY catUUID ORDER BY catDateOpened DESC LIMIT 5";
             using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
             {
@@ -64,27 +96,21 @@ namespace DigitalArchive
                         subItem[i].Tag = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
 
                         subItem[i].Text = sqlRead.GetString(sqlRead.GetOrdinal("catName")) + " | " + sqlRead.GetString(sqlRead.GetOrdinal("catDateOpened"));
-                        //subItem[i].Text = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
                         string curID = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
                         subItem[i].Click += delegate { CatPrevMenuItemClick(curID); };
-                       //subItem[i].Click += new EventHandler(CatPrevMenuItemClick(sqlRead.GetString(sqlRead.GetOrdinal("catUUID"))));
-                            
-                        recCur.DropDownItems.Add(subItem[i]); // this adds the stuff
+                        recCur.DropDownItems.Add(subItem[i]); // this adds the items to the drop down menu
                         i++;
-                     
-                        //if (!sqlRead.IsDBNull(0)) catName = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
                     }
-                    
+
                 }
                 conn.Close();
             }
-
-
 
         }
 
         protected void CatPrevMenuItemClick(string catID)
         {
+            //load previous selected previous catalogue - but only if its available
             Catalogue curCat = new Catalogue(catID);
             if(curCat.catName == null)
             {
@@ -139,11 +165,6 @@ namespace DigitalArchive
             catch (Exception ex)
             {
                 throw ex;
-                /*
-                DialogResult dlgResult = MessageBox.Show(ex.Message, "Latest Catalogue not found", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                catName = null;
-                */
             }
 
 
@@ -153,7 +174,7 @@ namespace DigitalArchive
 
         
         static SQLiteConnection LoadLatestCatalogue()
-        {
+        {   // not needed
 
             //find the latest Catalogue
             string catName = GetLatestCatalogue();
@@ -181,7 +202,7 @@ namespace DigitalArchive
 
         public void GetCatalogue()
         {
-            //link app to an existing catalogue
+            //link app to an existing catalogue chosen by the user
             try
             {
                 string filePath;
@@ -198,7 +219,10 @@ namespace DigitalArchive
 
                         try
                         {
+                            //populate globals with catalogue details
                             Catalogue testCat = new Catalogue(filePath);
+                            //update list of recent catalogues
+                            GetRecentCatalogues();
 
                         }
                         catch (Exception ex)
@@ -210,11 +234,6 @@ namespace DigitalArchive
                         {
                             toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
                         }
-
-                        // if it is then store path and name locally
-
-                        // add data to digarch.dacat to update with latest catalogue
-
 
                     }
 
@@ -233,7 +252,7 @@ namespace DigitalArchive
         public void PopulateTreeView()
         {
             /*
-             * 
+             * J Vincent
              * 
              * 
              */
@@ -301,10 +320,12 @@ namespace DigitalArchive
         private void treeViewCat_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             /*
+             * J Vincent
+             * This populates the tree view with the files in the folder
              * 
-             * 
-             * 
-             * 
+             * it needs to be compared with the details of files stored in the catalogue
+             * and highlight any discrepenacies
+             * and hide the DACAT folder
              * 
              */
 
@@ -321,6 +342,9 @@ namespace DigitalArchive
                     {
                         DirectoryInfo di = new DirectoryInfo(dir);
                         TreeNode node = new TreeNode(di.Name, 1, 2);
+                        //if its the DACAT folder ignore
+                        if(di.Name != "DACAT")
+                        {
 
                         try
                         {
@@ -333,7 +357,13 @@ namespace DigitalArchive
 
                             foreach (var file in di.GetFiles())
                             {
-                                TreeNode n = new TreeNode(file.Name, 4, 4);
+                                //check if file is already in db
+                                string fileDets = file.DirectoryName;
+                                TreeNode n;
+                                //if in db
+                                n = new TreeNode(file.Name, 4, 4);
+
+                                //n = new TreeNode(file.Name, 5, 5);
                                 node.Nodes.Add(n);
                             }
 
@@ -352,6 +382,7 @@ namespace DigitalArchive
                         finally
                         {
                             e.Node.Nodes.Add(node);
+                        }
                         }
                     }
                     //add files of rootdirectory
@@ -436,39 +467,33 @@ namespace DigitalArchive
 
         private void Main_Load(object sender, EventArgs e)
         {
+            //show user name in bottom bar
             toolStripUserName.Text = "User: " + Globals.usersName;
         }
 
         private void btnUsersName_Click(object sender, EventArgs e)
         {
+            /*
+             * J Vincent
+             * Change  username used on App
+             */
+
             try
             {
                 this.toolStripMessage.Text = "User Name must be between 3 and 15 characters";
 
-                // this needs a bit more validatyion etc
+                // this needs a bit more validation etc
                 if (txtUsersName.Text.Length > 2 && txtUsersName.Text.Length <16)
                 {
-
-
                     Globals.SetUserName(txtUsersName.Text);
                     toolStripUserName.Text = "User: " + Globals.usersName;
-                    // update app tables
-                    SQLiteConnection sys_Conn = new SQLiteConnection(Globals.connApp + " New = True; Compress = True; ");
-                    sys_Conn.Open();
-
-                    // update tblAppSystemb(no where clause as only one line should be in use)
-                    string sql = "UPDATE tblAppSystem SET username = '" + txtUsersName.Text + "';";
-                    SQLiteCommand command = new SQLiteCommand(sql, sys_Conn);
-                    command.ExecuteNonQuery();
-                    sys_Conn.Close();
                     this.toolStripMessage.Text = "User Name updated";
-
                 }
                 else
                 {
                     this.toolStripMessage.Text = "User Name must be between 3 and 15 characters";
                 }
-
+                //hide the sub form
                 this.lblUsersName.Visible = false;
                 this.txtUsersName.Visible = false;
                 this.btnUsersName.Visible = false;
@@ -495,12 +520,6 @@ namespace DigitalArchive
 
         }
 
-        private void btnNewCat_Click(object sender, EventArgs e)
-        {
-            new NewCat().ShowDialog();
-
-            
-        }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -509,7 +528,7 @@ namespace DigitalArchive
 
         private void addCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //new NewCat().ShowDialog();
+            // makes new catalogue subform visible when option slected in drop down
             pnlNewCat.Visible = true;
         }
 
@@ -534,13 +553,10 @@ namespace DigitalArchive
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-                    ReadFileInfo.ReadFiles();
-        }
 
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // this will give the user the opportunity to edit the catalogue name and description
 
         }
 
@@ -570,6 +586,7 @@ namespace DigitalArchive
 
         private void editUserNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //make the username subform visible
             this.txtUsersName.Text = Globals.usersName;
             this.lblUsersName.Visible = true;
             this.txtUsersName.Visible = true;
@@ -582,6 +599,7 @@ namespace DigitalArchive
 
         private void btnCancelUsersName_Click(object sender, EventArgs e)
         {
+            //hide the username subform without making any changes
             this.txtUsersName.Text = null;
             this.lblUsersName.Visible = false;
             this.txtUsersName.Visible = false;
@@ -603,6 +621,7 @@ namespace DigitalArchive
 
         private string GetCatalogueLoc()
         {
+            //Used in new catalogue subform open dialog to get location of new catalogue
             txtFilePath.Text = "click here to select location";
             string filePath = "";
             using (FolderBrowserDialog getFilePath = new FolderBrowserDialog())
@@ -625,16 +644,19 @@ namespace DigitalArchive
 
         private void btnGetFolder_Click(object sender, EventArgs e)
         {
+            // new catalogue subform open dialog to get location of new catalogue
             txtFilePath.Text = GetCatalogueLoc();
         }
 
         private void lblFilePath_Click(object sender, EventArgs e)
         {
+            // new catalogue subform open dialog to get location of new catalogue
             txtFilePath.Text = GetCatalogueLoc();
         }
 
         private void btnGetGuid_Click(object sender, EventArgs e)
         {
+            //create new cataloge then make new catalogue subform invisible and update information on show
             string msg;
             NewCatalogue nc = new NewCatalogue(txtFilePath.Text, txtCatName.Text, txtCatDesc.Text);
             msg = nc.retMessage;
@@ -645,18 +667,21 @@ namespace DigitalArchive
             toolStripMessage.Text = msg;
             PopulateTreeView();
             //update the recent files menu
-
+            GetRecentCatalogues();
+            //show current catalogue
             LabelCurrentCat = Globals.curCatName;
         }
 
         private void txtFilePath_Click(object sender, EventArgs e)
         {
+            // new catalogue subform open dialog to get location of new catalogue
             txtFilePath.Text = GetCatalogueLoc();
 
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+            //cancel new catalogue subform without making any changes.
             txtFilePath.Text = null;
             txtCatName.Text = null;
             txtCatDesc.Text = null;
@@ -667,7 +692,8 @@ namespace DigitalArchive
 
         private void txtCatName_Validating(object sender, CancelEventArgs e)
         {
-            if(txtCatName.Text.Length < 5 || txtCatName.Text.Length > 120)
+            // validate for new catalogue subform
+            if (txtCatName.Text.Length < 5 || txtCatName.Text.Length > 120)
             {
                 epName.SetError(txtCatName, "Name must be between 5 and 120 characters");
                 bNewCatNameOK = false;
@@ -683,6 +709,7 @@ namespace DigitalArchive
 
         private void txtCatDesc_Validating(object sender, CancelEventArgs e)
         {
+            // validate for new catalogue subform
             if (txtCatDesc.Text.Length < 10 || txtCatDesc.Text.Length > 255)
             {
                 epName.SetError(txtCatDesc, "Name must be between 10 and 255 characters");
@@ -700,7 +727,8 @@ namespace DigitalArchive
 
         private void txtFilePath_Validating(object sender, CancelEventArgs e)
         {
-            if(txtFilePath.Text.Length > 4)
+            // validate for new catalogue subform
+            if (txtFilePath.Text.Length > 4)
             {
 
                 DirectoryInfo di = new DirectoryInfo(txtFilePath.Text);
@@ -722,6 +750,7 @@ namespace DigitalArchive
 
         private void txtUsersName_Validating(object sender, CancelEventArgs e)
         {
+            // validate for change user name subform
             {
                 if (txtUsersName.Text.Length < 3 || txtUsersName.Text.Length > 15)
                 {
@@ -735,15 +764,10 @@ namespace DigitalArchive
             }
 
         }
-
-        Boolean bNewCatNameOK = false;
-        Boolean bNewCatDescOK = false;
-        Boolean bNewCatPathOK = false;
-
         
-
         private void btnGetGuid_Enable()
         {
+            //once all new catalogue fields are validated, create button is enabled
             if(bNewCatPathOK==true && bNewCatNameOK==true && bNewCatDescOK == true)
             {
                 btnGetGuid.Enabled = true;
@@ -754,15 +778,69 @@ namespace DigitalArchive
             }
         }
 
-        private void txtCatDesc_Validated(object sender, EventArgs e)
+        private void button1_Click_2(object sender, EventArgs e)
+        {   //just here for testing. Delete this and button before go live
+            ReadFileInfo fileInfo = new ReadFileInfo();
+            fileInfo.GetFileInfo(@"D:\temp\example.jpg");
+        }
+
+        private void btnScanChanges_Click(object sender, EventArgs e)
         {
+            //scan for any changes between actual files and info stored in catalogue
+
+            // compare hash/checksum
 
         }
 
-        private void button1_Click_2(object sender, EventArgs e)
+        private void btnImport_Click(object sender, EventArgs e)
         {
+            // import data into catalogue
+            // all files must be within this file structure (they can be copied in)
+            // user needs to create a new catalogue for other areas
+
+            //options for all files in current structure (except DACAT folder!)
             ReadFileInfo fileInfo = new ReadFileInfo();
-            fileInfo.GetFileInfo("");
+            //iterate throiugh each file in the tree view
+            TreeNode nodeTop = treeViewCat.Nodes[0];
+            
+            foreach (TreeNode nodeSub in nodeTop.Nodes)
+            {
+                //fileInfo.GetFileInfo(@"D:\temp\example.jpg");
+                //test to see if node.text is a valid directory
+                if (nodeSub.Text!="DACAT")
+                {
+
+                    fileInfo.GetFileInfo(nodeSub.FullPath);
+                    if((fileInfo.fileSystem == false && fileInfo.fileDir == false))
+                    {
+                        CatalogueItemMetaUpdate intoCat = new CatalogueItemMetaUpdate();
+                       intoCat.AddItem(fileInfo.fileName, fileInfo.fileLocation, fileInfo.fileHash, fileInfo.fileOwner);
+                        //get ItemID
+                        //
+                        //add meta data to tblMetaItems for each metaTitle if available
+                        int myItemID = intoCat.itemID; //get itemID
+                        if (fileInfo.fileMetaType != null) intoCat.AddMetaItem(myItemID, true, "TYPE OF FILE", "string", fileInfo.fileMetaType);
+                        if (fileInfo.fileName != null) intoCat.AddMetaItem(myItemID, true, "NAME", "string", fileInfo.fileName);
+                        if (fileInfo.fileMetaSize != null) intoCat.AddMetaItem(myItemID, true, "SIZE", "INT", fileInfo.fileMetaSize);
+                        if (fileInfo.fileMetaDateCreated != null) intoCat.AddMetaItem(myItemID, true, "CREATED", "DateTime", fileInfo.fileMetaDateCreated);
+                        if (fileInfo.fileMetaDateModified != null) intoCat.AddMetaItem(myItemID, true, "MODIFIED", "DateTime", fileInfo.fileMetaDateModified);
+                        if (fileInfo.fileMetaReadOnly != null) intoCat.AddMetaItem(myItemID, true, "READ ONLY", "Boolean", fileInfo.fileMetaReadOnly);
+                        if (fileInfo.fileLocation != null) intoCat.AddMetaItem(myItemID, true, "LOCATION", "string", fileInfo.fileLocation);
+                        if (fileInfo.fileMetaHidden != null) intoCat.AddMetaItem(myItemID, true, "HIDDEN", "Boolean", fileInfo.fileMetaHidden);
+                        if (fileInfo.fileMetaDateTaken != null) intoCat.AddMetaItem(myItemID, true, "DATE TAKEN", "DateTime", fileInfo.fileMetaDateTaken);
+                        if (fileInfo.fileMetaKeyword != null) intoCat.AddMetaItem(myItemID, true, "KEYWORDS", "string", fileInfo.fileMetaKeyword);
+                    }
+
+                }
+
+
+
+            }
+
+
+            //or selected files in current structure
+            //later
+
         }
     }
 }

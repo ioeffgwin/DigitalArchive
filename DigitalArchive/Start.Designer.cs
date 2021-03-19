@@ -65,6 +65,7 @@ namespace DigitalArchive
             this.epName = new System.Windows.Forms.ErrorProvider(this.components);
             this.btnScanChanges = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
             btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -124,6 +125,7 @@ namespace DigitalArchive
             // 
             // mnuStrip
             // 
+            this.mnuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.mnuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.mnuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applicationToolStripMenuItem,
@@ -260,6 +262,7 @@ namespace DigitalArchive
             this.mainImageList.Images.SetKeyName(2, "FolderClosed_16x.png");
             this.mainImageList.Images.SetKeyName(3, "Lock_16x.png");
             this.mainImageList.Images.SetKeyName(4, "Note_16x.png");
+            this.mainImageList.Images.SetKeyName(5, "Note_R16x.png");
             // 
             // pnlNewCat
             // 
@@ -349,7 +352,6 @@ namespace DigitalArchive
             this.txtCatDesc.Size = new System.Drawing.Size(564, 90);
             this.txtCatDesc.TabIndex = 17;
             this.txtCatDesc.Validating += new System.ComponentModel.CancelEventHandler(this.txtCatDesc_Validating);
-            this.txtCatDesc.Validated += new System.EventHandler(this.txtCatDesc_Validated);
             // 
             // txtCatName
             // 
@@ -380,10 +382,11 @@ namespace DigitalArchive
             // 
             this.btnScanChanges.Location = new System.Drawing.Point(5, 36);
             this.btnScanChanges.Name = "btnScanChanges";
-            this.btnScanChanges.Size = new System.Drawing.Size(172, 35);
+            this.btnScanChanges.Size = new System.Drawing.Size(146, 35);
             this.btnScanChanges.TabIndex = 19;
             this.btnScanChanges.Text = "Scan for Changes";
             this.btnScanChanges.UseVisualStyleBackColor = true;
+            this.btnScanChanges.Click += new System.EventHandler(this.btnScanChanges_Click);
             // 
             // button1
             // 
@@ -395,11 +398,22 @@ namespace DigitalArchive
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
+            // btnImport
+            // 
+            this.btnImport.Location = new System.Drawing.Point(179, 36);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(146, 35);
+            this.btnImport.TabIndex = 21;
+            this.btnImport.Text = "Import New";
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.btnImport);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnScanChanges);
             this.Controls.Add(this.pnlNewCat);
@@ -462,6 +476,7 @@ namespace DigitalArchive
         private System.Windows.Forms.ErrorProvider epName;
         private System.Windows.Forms.Button btnScanChanges;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnImport;
     }
 }
 

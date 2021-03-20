@@ -7,7 +7,6 @@ using System.Data.SQLite;
 using System.Windows.Forms;
 using System.IO;
 
-
 namespace DigitalArchive
 {
     public class Catalogue
@@ -89,66 +88,6 @@ namespace DigitalArchive
 
         }
 
-        
-
-        public void setCatalogueVer()
-        {   
-            /*
-             * J Vincent
-             * This update the catalogue to the latest version
-             * latest version is in date format down to millisecond
-             * can be used for comparison with other copies of the "same" catalogue
-             * catalogue version update with every change
-             * 
-             */
-            //change Cat Version (and last changed date)
-            //
-            DateTime theDate = DateTime.Now;
-            string newVersion = theDate.ToString("yyyyMMddHHmmssFFF");
-            try
-            {
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
-                // update tblAppSystemb(no where clause as only one line should be in use)
-                string sqlu = "UPDATE tblCatalogue SET CatVersion = '" + newVersion + "', catLastUpdate = '" + theDate + "'; ";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqlu;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
-                this.catVer = newVersion;
-                Globals.curCatVer = this.catVer;
-                this.catDateLastUpdate = theDate.ToString();
-
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        public void setCatalogueLastUpdate()
-        { 
-            //change Cat last changed date
-            try
-            {
-                DateTime theDate = DateTime.Now;
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
-                // update tblAppSystemb(no where clause as only one line should be in use)
-                string sqlu = "UPDATE tblCatalogue SET catLastUpdate = '" + theDate + "'; ";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqlu;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
-                this.catDateLastUpdate = theDate.ToString();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
 
         public void SetLatestCatalogue()
         {
@@ -176,14 +115,77 @@ namespace DigitalArchive
             }
         }
 
+        public static List<int> MissingItems()
+        {
+            /*
+             * J Vincent
+             * Identify items in catalogue database that are missing from folders 
+             * return as list of itemID from tblItems
+             * 
+             * 
+             */
 
-        //get items
+            int fileID;
+            string fileName;
+            string filePath;
+            List<int> missingFiles = new List<int>();
 
-        //meta data
+            //go through tblItems check if exist as real file
+            string sql = "SELECT itemID, itemName, itemPath FROM tblItems;";
+            using (SQLiteConnection conn = new SQLiteConnection(Globals.connCat))
+            {
+                conn.Open();
+                using (SQLiteCommand sql_cmd = new SQLiteCommand(sql, conn))
+                {
+                    SQLiteDataReader sqlRead;
+                    sqlRead = sql_cmd.ExecuteReader();
+                    while (sqlRead.Read())
+                    {
+                        fileID = sqlRead.GetInt32(0);
+                        fileName = sqlRead.GetString(1);
+                        filePath = sqlRead.GetString(2);
+                        if(File.Exists(filePath + "\\" + fileName) == false)
+                        {
+                            missingFiles.Add(fileID);
+                        }
+                    }
+                }
+                conn.Close();
 
-        //changelog
+                return missingFiles;
+
+            }
 
 
+
+        }
+        public static string[] GetFileName(int itemID)
+        {
+            string[] fName = new string[2];
+            //go through tblItems check if exist as real file
+            string sql = "SELECT itemName, itemPath FROM tblItems WHERE itemID =" + itemID + ";";
+            using (SQLiteConnection conn = new SQLiteConnection(Globals.connCat))
+            {
+                conn.Open();
+                using (SQLiteCommand sql_cmd = new SQLiteCommand(sql, conn))
+                {
+                    SQLiteDataReader sqlRead;
+                    sqlRead = sql_cmd.ExecuteReader();
+                    while (sqlRead.Read())
+                    {
+                        fName[0] = sqlRead.GetString(0);
+                        fName[1] = sqlRead.GetString(1);
+                    }
+                }
+                conn.Close();
+
+
+
+                return fName;
+            }
+
+
+        }
 
     }
 }

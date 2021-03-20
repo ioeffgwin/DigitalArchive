@@ -20,10 +20,11 @@ namespace DigitalArchive
          * SHA256 returned as byte[] (stored as BLOB(32) in SQLite)
          * 
          */
-        public static byte[] Main(String filePath)
+        public static string Main(String filePath)
         {
             string checkfile = filePath;
             byte[] hashValue = default;
+            string retVal = null;
             //check file valid
             if (File.Exists(checkfile))
             {
@@ -38,6 +39,9 @@ namespace DigitalArchive
                         hashValue = mySHA256.ComputeHash(fileStream);
                         // Close the file.
                         fileStream.Close();
+
+                        retVal = CheckSum.ChecksumToStr(hashValue);
+
                     }
                     catch (Exception e)
                     {
@@ -45,26 +49,56 @@ namespace DigitalArchive
                     }
                 }
             }
-            return hashValue;
+            return retVal;
         }
 
-        public static Boolean CheckCheckSum(String filePath)
+        static string ChecksumToStr(byte[] hashVal)
+        {
+            /*
+             * J Vincent
+             * convert hash byte[] value to string
+             * so it can be stored in db
+             * in comparison hash byte[] will also need to be converted to string
+             * 
+             */
+
+            string retVal;
+            //convert hash to string
+            var strHash = new StringBuilder();
+            // Loop through each byte of the hashed data
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < hashVal.Length; i++)
+            {
+                strHash.Append(hashVal[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            retVal = strHash.ToString();
+
+
+            return retVal;
+        }
+
+        public static int CheckCheckSum(string fileDir, String fileName)
         {
             /*
              * J Vincent
              * check checksum of file compared to value stored in DB
+             * return 0 not in db (black icon)
+             * return 1 in db but checksum different (red icon)
+             * return 2 in db and checksum ok (green icon)
+             * 
              */
-
-            Boolean checkOK = default;
-            byte[] check1 = Main(filePath);
-            byte[] check2;
+            int checkOK = 0;
+            string check1 = Main(fileDir + "\\" + fileName);
+            string check2 = default;
+            int itemID = 0;
             {
-                int myItemID = 0;
                 SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
                 cat_conn.Open();
 
-                string sql = "SELECT FROM tblItems itemChecksum WHERE itemName = '" + itemName + "' " +
-                    "AND itemPath = '" + itemPath + "';";
+                string sql = "SELECT itemChecksum, itemID FROM tblItems WHERE itemName = '" + fileName + "' " +
+                    "AND itemPath = '" + fileDir + "';";
 
                 SQLiteDataReader sqlRead;
                 SQLiteCommand sql_cmd;
@@ -74,16 +108,18 @@ namespace DigitalArchive
                 sqlRead = sql_cmd.ExecuteReader();
                 while (sqlRead.Read())
                 {
-                    check2 = sqlRead.GetBytes(0);
+                    check2 = sqlRead.GetString(0);
+                    itemID = sqlRead.GetInt32(1);
+                    checkOK = 1;
                 }
                 cat_conn.Close();
 
-            if (check1 == check2)
-            {
-                checkOK = true;
+                if (check1 == check2)
+                {
+                    checkOK = 2;
+                }
             }
-
-
+            if (checkOK == 1) ChangeLog.Main("Checksum different: " + fileName, itemID);
             return checkOK;
         }
 

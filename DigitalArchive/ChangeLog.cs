@@ -9,7 +9,7 @@ using System.IO;
 
 namespace DigitalArchive
 {
-    class ChangeLog
+    public class ChangeLog
     {
 
     /* J Vincent
@@ -20,7 +20,7 @@ namespace DigitalArchive
      * 
      */
 
-        public void AddToLog(string logUpdate, int itemID)
+        public static void Main(string logUpdate, int itemID)
         {
             /*
              * J Vincent

@@ -73,7 +73,7 @@ namespace DigitalArchive
                               "itemAddedBy    VARCHAR(50)  NOT NULL, " +
                               "itemName       VARCHAR(255) NOT NULL, " +
                               "itemPath       VARCHAR(255) NOT NULL, " +
-                              "itemChecksum   BLOB(32) NOT NULL, " +
+                              "itemChecksum   VARCHAR(120) NOT NULL, " +
                               "itemLastChange DATETIME NOT NULL, " +
                               "itemOwner      VARCHAR(128), " +
                               "itemCopyright  BOOLEAN NOT NULL DEFAULT(0), " +

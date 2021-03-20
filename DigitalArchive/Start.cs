@@ -27,7 +27,7 @@ namespace DigitalArchive
 
         //used to help validation in new catalogue subform
         //once they are all true, the catalogue can be created
-        Boolean bNewCatNameOK = false; 
+        Boolean bNewCatNameOK = false;
         Boolean bNewCatDescOK = false;
         Boolean bNewCatPathOK = false;
 
@@ -51,9 +51,9 @@ namespace DigitalArchive
             {   // get the latest used catalogue from digarch.dacat
                 curCatID = GetLatestCatalogue();
             }
-            
 
-            if (curCatID!=null)
+
+            if (curCatID != null)
             {
                 Catalogue curCat = new Catalogue(curCatID);
                 toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
@@ -112,7 +112,7 @@ namespace DigitalArchive
         {
             //load previous selected previous catalogue - but only if its available
             Catalogue curCat = new Catalogue(catID);
-            if(curCat.catName == null)
+            if (curCat.catName == null)
             {
                 toolStripCurCat.Text = "Catalogue not found";
             }
@@ -127,7 +127,7 @@ namespace DigitalArchive
 
 
 
-        static void InsertData(SQLiteConnection conn, string SQLstr )
+        static void InsertData(SQLiteConnection conn, string SQLstr)
         {
             //update cataloge with data
             /*
@@ -155,7 +155,7 @@ namespace DigitalArchive
                         sqlRead = sql_cmd.ExecuteReader();
                         while (sqlRead.Read())
                         {
-                            if(!sqlRead.IsDBNull(0)) catName = sqlRead.GetString(sqlRead.GetOrdinal("LastCatalogue"));
+                            if (!sqlRead.IsDBNull(0)) catName = sqlRead.GetString(sqlRead.GetOrdinal("LastCatalogue"));
                         }
                     }
                     conn.Close();
@@ -172,7 +172,7 @@ namespace DigitalArchive
 
         }
 
-        
+
         static SQLiteConnection LoadLatestCatalogue()
         {   // not needed
 
@@ -190,7 +190,7 @@ namespace DigitalArchive
             }
             catch (Exception ex)
             {
-                DialogResult dlgResult = MessageBox.Show(ex.Message + catName, "Load Catalogue not found", 
+                DialogResult dlgResult = MessageBox.Show(ex.Message + catName, "Load Catalogue not found",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             return cat_conn;
@@ -307,7 +307,7 @@ namespace DigitalArchive
 
                     treeViewCat.Nodes.Add(node);
                 }
-
+                treeViewCat.ExpandAll();
 
             }
             catch (Exception ex)
@@ -343,55 +343,100 @@ namespace DigitalArchive
                         DirectoryInfo di = new DirectoryInfo(dir);
                         TreeNode node = new TreeNode(di.Name, 1, 2);
                         //if its the DACAT folder ignore
-                        if(di.Name != "DACAT")
+                        if (di.Name != "DACAT")
                         {
 
-                        try
-                        {
-                            //keep the directory's full path in the tag for use later
-                            node.Tag = dir;
-
-                            //if the directory has sub directories add the place holder
-                            if (di.GetDirectories().Count() > 0)
-                                node.Nodes.Add(null, "...", 0, 0);
-
-                            foreach (var file in di.GetFiles())
+                            try
                             {
-                                //check if file is already in db
-                                string fileDets = file.DirectoryName;
-                                TreeNode n;
-                                //if in db
-                                n = new TreeNode(file.Name, 4, 4);
+                                //keep the directory's full path in the tag for use later
+                                node.Tag = dir;
 
-                                //n = new TreeNode(file.Name, 5, 5);
-                                node.Nodes.Add(n);
+                                //if the directory has sub directories add the place holder
+                                if (di.GetDirectories().Count() > 0)
+                                    node.Nodes.Add(null, "...", 0, 0);
+
+                                foreach (var file in di.GetFiles())
+                                {
+                                    //check if file is already in db
+                                    string fileDets = file.DirectoryName;
+                                    int checkRes = CheckSum.CheckCheckSum(fileDets, file.Name);
+                                    TreeNode n;
+                                    switch (checkRes)
+                                    {
+                                        case 0: //not in db
+                                            n = new TreeNode(file.Name, 4, 4);
+                                            break;
+                                        case 1: //in db, checksum wrong
+                                            n = new TreeNode(file.Name, 5, 5);
+                                            break;
+                                        case 2: //in db, all ok
+                                            n = new TreeNode(file.Name, 6, 6);
+                                            break;
+                                        default:
+                                            n = new TreeNode(file.Name, 4, 4);
+                                            break;
+
+                                    }
+                                    node.Nodes.Add(n);
+                                }
+
                             }
-
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            //display a locked folder icon
-                            node.ImageIndex = 3;
-                            node.SelectedImageIndex = 3;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message, "DirectoryLister",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        finally
-                        {
-                            e.Node.Nodes.Add(node);
-                        }
+                            catch (UnauthorizedAccessException)
+                            {
+                                //display a locked folder icon
+                                node.ImageIndex = 3;
+                                node.SelectedImageIndex = 3;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "DirectoryLister",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            finally
+                            {
+                                e.Node.Nodes.Add(node);
+                            }
                         }
                     }
                     //add files of rootdirectory
                     DirectoryInfo rootDir = new DirectoryInfo(e.Node.Tag.ToString());
                     foreach (var file in rootDir.GetFiles())
                     {
-                        TreeNode n = new TreeNode(file.Name, 4, 4);
+                        //check if file is already in db
+                        string fileDets = file.DirectoryName;
+                        int checkRes = CheckSum.CheckCheckSum(fileDets, file.Name);
+                        TreeNode n;
+                        switch (checkRes)
+                        {
+                            case 0: //not in db
+                                n = new TreeNode(file.Name, 4, 4);
+                                break;
+                            case 1: //in db, checksum wrong
+                                n = new TreeNode(file.Name, 5, 5);
+                                break;
+                            case 2: //in db, all ok
+                                n = new TreeNode(file.Name, 6, 6);
+                                break;
+                            default:
+                                n = new TreeNode(file.Name, 4, 4);
+                                break;
+
+                        }
+
+                        e.Node.Nodes.Add(n);
+
+                    }
+
+                    //add missing files to treeview - these are files in the database that aren't in the folder
+                    List<int> missing = Catalogue.MissingItems();
+                    foreach(int missingFile in missing)
+                    {
+                        string[] filenames = Catalogue.GetFileName(missingFile);
+                        TreeNode n;
+                        n = new TreeNode(filenames[0], 7, 7);
                         e.Node.Nodes.Add(n);
                     }
+                    treeViewCat.ExpandAll();
 
                 }
             }
@@ -408,7 +453,7 @@ namespace DigitalArchive
 
             var dirs = Directory.GetDirectories(dir).ToArray();
             var nodes = new List<TreeNode>();
-            
+
             foreach (string d in dirs)
             {
                 DirectoryInfo di = new DirectoryInfo(d);
@@ -483,7 +528,7 @@ namespace DigitalArchive
                 this.toolStripMessage.Text = "User Name must be between 3 and 15 characters";
 
                 // this needs a bit more validation etc
-                if (txtUsersName.Text.Length > 2 && txtUsersName.Text.Length <16)
+                if (txtUsersName.Text.Length > 2 && txtUsersName.Text.Length < 16)
                 {
                     Globals.SetUserName(txtUsersName.Text);
                     toolStripUserName.Text = "User: " + Globals.usersName;
@@ -764,11 +809,11 @@ namespace DigitalArchive
             }
 
         }
-        
+
         private void btnGetGuid_Enable()
         {
             //once all new catalogue fields are validated, create button is enabled
-            if(bNewCatPathOK==true && bNewCatNameOK==true && bNewCatDescOK == true)
+            if (bNewCatPathOK == true && bNewCatNameOK == true && bNewCatDescOK == true)
             {
                 btnGetGuid.Enabled = true;
             }
@@ -778,11 +823,6 @@ namespace DigitalArchive
             }
         }
 
-        private void button1_Click_2(object sender, EventArgs e)
-        {   //just here for testing. Delete this and button before go live
-            ReadFileInfo fileInfo = new ReadFileInfo();
-            fileInfo.GetFileInfo(@"D:\temp\example.jpg");
-        }
 
         private void btnScanChanges_Click(object sender, EventArgs e)
         {
@@ -798,46 +838,75 @@ namespace DigitalArchive
             // all files must be within this file structure (they can be copied in)
             // user needs to create a new catalogue for other areas
 
-            //options for all files in current structure (except DACAT folder!)
-            ReadFileInfo fileInfo = new ReadFileInfo();
+            //have any updates occurred
+            Boolean bUpdates = false;
+
             //iterate throiugh each file in the tree view
-            TreeNode nodeTop = treeViewCat.Nodes[0];
+            foreach (TreeNode nodeTop in treeViewCat.Nodes)
+            {
+                //test to see if node.text is a valid directory
+                //options for all files in current structure (except DACAT folder!)
+                if (nodeTop.Text != "DACAT")
+                {
+                    bUpdates = CaptureFileInfo(nodeTop);
+                }
+            }
+
+            if (bUpdates == true)
+            {
+                toolStripMessage.Text = "Import Complete";
+                PopulateTreeView();
+
+            }
+            else
+            {
+                toolStripMessage.Text = "There were no new files to import";
+            }
+
+        }
+        private Boolean CaptureFileInfo(TreeNode nodeTop, Boolean boolUp = default)
+        {
+            Boolean bUpdates = boolUp;
             
+            ReadFileInfo fileInfo = new ReadFileInfo();
+
+
             foreach (TreeNode nodeSub in nodeTop.Nodes)
             {
-                //fileInfo.GetFileInfo(@"D:\temp\example.jpg");
-                //test to see if node.text is a valid directory
-                if (nodeSub.Text!="DACAT")
-                {
 
-                    fileInfo.GetFileInfo(nodeSub.FullPath);
-                    if((fileInfo.fileSystem == false && fileInfo.fileDir == false))
-                    {
-                        CatalogueItemMetaUpdate intoCat = new CatalogueItemMetaUpdate();
-                       intoCat.AddItem(fileInfo.fileName, fileInfo.fileLocation, fileInfo.fileHash, fileInfo.fileOwner);
-                        //get ItemID
-                        //
-                        //add meta data to tblMetaItems for each metaTitle if available
-                        int myItemID = intoCat.itemID; //get itemID
-                        if (fileInfo.fileMetaType != null) intoCat.AddMetaItem(myItemID, true, "TYPE OF FILE", "string", fileInfo.fileMetaType);
-                        if (fileInfo.fileName != null) intoCat.AddMetaItem(myItemID, true, "NAME", "string", fileInfo.fileName);
-                        if (fileInfo.fileMetaSize != null) intoCat.AddMetaItem(myItemID, true, "SIZE", "INT", fileInfo.fileMetaSize);
-                        if (fileInfo.fileMetaDateCreated != null) intoCat.AddMetaItem(myItemID, true, "CREATED", "DateTime", fileInfo.fileMetaDateCreated);
-                        if (fileInfo.fileMetaDateModified != null) intoCat.AddMetaItem(myItemID, true, "MODIFIED", "DateTime", fileInfo.fileMetaDateModified);
-                        if (fileInfo.fileMetaReadOnly != null) intoCat.AddMetaItem(myItemID, true, "READ ONLY", "Boolean", fileInfo.fileMetaReadOnly);
-                        if (fileInfo.fileLocation != null) intoCat.AddMetaItem(myItemID, true, "LOCATION", "string", fileInfo.fileLocation);
-                        if (fileInfo.fileMetaHidden != null) intoCat.AddMetaItem(myItemID, true, "HIDDEN", "Boolean", fileInfo.fileMetaHidden);
-                        if (fileInfo.fileMetaDateTaken != null) intoCat.AddMetaItem(myItemID, true, "DATE TAKEN", "DateTime", fileInfo.fileMetaDateTaken);
-                        if (fileInfo.fileMetaKeyword != null) intoCat.AddMetaItem(myItemID, true, "KEYWORDS", "string", fileInfo.fileMetaKeyword);
-                    }
+                fileInfo.GetFileInfo(nodeSub.FullPath);
+                int alreadyHere = CheckSum.CheckCheckSum(fileInfo.fileLocation, fileInfo.fileName);
+                if ((fileInfo.fileSystem == false && fileInfo.fileDir == false && alreadyHere == 0))
+                {
+                    CatalogueItemMetaUpdate intoCat = new CatalogueItemMetaUpdate();
+                    //add file information to tbl Items
+                    intoCat.AddItem(fileInfo.fileName, fileInfo.fileLocation, fileInfo.fileHash, fileInfo.fileOwner);
+                    //get ItemID
+                    int myItemID = intoCat.itemID;
+                    //add meta data to tblMetaItems for each metaTitle if available
+                    if (fileInfo.fileMetaType != null) intoCat.AddMetaItem(myItemID, true, "TYPE OF FILE", "string", fileInfo.fileMetaType);
+                    if (fileInfo.fileName != null) intoCat.AddMetaItem(myItemID, true, "NAME", "string", fileInfo.fileName);
+                    if (fileInfo.fileMetaSize != null) intoCat.AddMetaItem(myItemID, true, "SIZE", "INT", fileInfo.fileMetaSize);
+                    if (fileInfo.fileMetaDateCreated != null) intoCat.AddMetaItem(myItemID, true, "CREATED", "DateTime", fileInfo.fileMetaDateCreated);
+                    if (fileInfo.fileMetaDateModified != null) intoCat.AddMetaItem(myItemID, true, "MODIFIED", "DateTime", fileInfo.fileMetaDateModified);
+                    if (fileInfo.fileMetaReadOnly != null) intoCat.AddMetaItem(myItemID, true, "READ ONLY", "Boolean", fileInfo.fileMetaReadOnly);
+                    if (fileInfo.fileLocation != null) intoCat.AddMetaItem(myItemID, true, "LOCATION", "string", fileInfo.fileLocation);
+                    if (fileInfo.fileMetaHidden != null) intoCat.AddMetaItem(myItemID, true, "HIDDEN", "Boolean", fileInfo.fileMetaHidden);
+                    if (fileInfo.fileMetaDateTaken != null) intoCat.AddMetaItem(myItemID, true, "DATE TAKEN", "DateTime", fileInfo.fileMetaDateTaken);
+                    if (fileInfo.fileMetaKeyword != null) intoCat.AddMetaItem(myItemID, true, "KEYWORDS", "string", fileInfo.fileMetaKeyword);
+                    //update catalogue latest version
+                    intoCat.SetCatalogueVer();
+                    //update change log
+                    ChangeLog.Main("New File Added: " + fileInfo.fileName, myItemID);
+                    bUpdates = true;
 
                 }
-
-
+                //recursively call this method again until entire tree covered
+                CaptureFileInfo(nodeSub, bUpdates);
 
             }
 
-
+            return bUpdates;
             //or selected files in current structure
             //later
 

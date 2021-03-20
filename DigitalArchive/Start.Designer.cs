@@ -64,8 +64,10 @@ namespace DigitalArchive
             this.btnGetGuid = new System.Windows.Forms.Button();
             this.epName = new System.Windows.Forms.ErrorProvider(this.components);
             this.btnScanChanges = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
+            this.importContentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scanForChangesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scanForDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -165,7 +167,10 @@ namespace DigitalArchive
             this.addCatalogueToolStripMenuItem,
             this.openCatalogueToolStripMenuItem,
             this.openRecentToolStripMenuItem,
-            this.editCatalogueToolStripMenuItem});
+            this.editCatalogueToolStripMenuItem,
+            this.importContentToolStripMenuItem,
+            this.scanForChangesToolStripMenuItem,
+            this.scanForDuplicatesToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(108, 29);
             this.toolStripMenuItem1.Text = "Catalogue";
@@ -263,6 +268,7 @@ namespace DigitalArchive
             this.mainImageList.Images.SetKeyName(3, "Lock_16x.png");
             this.mainImageList.Images.SetKeyName(4, "Note_16x.png");
             this.mainImageList.Images.SetKeyName(5, "Note_R16x.png");
+            this.mainImageList.Images.SetKeyName(6, "Note_G16x.png");
             // 
             // pnlNewCat
             // 
@@ -382,21 +388,11 @@ namespace DigitalArchive
             // 
             this.btnScanChanges.Location = new System.Drawing.Point(5, 36);
             this.btnScanChanges.Name = "btnScanChanges";
-            this.btnScanChanges.Size = new System.Drawing.Size(146, 35);
+            this.btnScanChanges.Size = new System.Drawing.Size(168, 35);
             this.btnScanChanges.TabIndex = 19;
             this.btnScanChanges.Text = "Scan for Changes";
             this.btnScanChanges.UseVisualStyleBackColor = true;
             this.btnScanChanges.Click += new System.EventHandler(this.btnScanChanges_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(543, 576);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 20;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
             // btnImport
             // 
@@ -408,13 +404,31 @@ namespace DigitalArchive
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
+            // importContentToolStripMenuItem
+            // 
+            this.importContentToolStripMenuItem.Name = "importContentToolStripMenuItem";
+            this.importContentToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.importContentToolStripMenuItem.Text = "Import Content";
+            this.importContentToolStripMenuItem.Click += new System.EventHandler(this.btnImport_Click);
+            // 
+            // scanForChangesToolStripMenuItem
+            // 
+            this.scanForChangesToolStripMenuItem.Name = "scanForChangesToolStripMenuItem";
+            this.scanForChangesToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.scanForChangesToolStripMenuItem.Text = "Scan for Changes";
+            // 
+            // scanForDuplicatesToolStripMenuItem
+            // 
+            this.scanForDuplicatesToolStripMenuItem.Name = "scanForDuplicatesToolStripMenuItem";
+            this.scanForDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.scanForDuplicatesToolStripMenuItem.Text = "Scan for Duplicates";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
             this.Controls.Add(this.btnImport);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnScanChanges);
             this.Controls.Add(this.pnlNewCat);
             this.Controls.Add(this.treeViewCat);
@@ -475,8 +489,10 @@ namespace DigitalArchive
         private System.Windows.Forms.Label lblNewCat;
         private System.Windows.Forms.ErrorProvider epName;
         private System.Windows.Forms.Button btnScanChanges;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnImport;
+        private System.Windows.Forms.ToolStripMenuItem importContentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scanForChangesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scanForDuplicatesToolStripMenuItem;
     }
 }
 

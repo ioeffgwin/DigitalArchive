@@ -43,7 +43,7 @@ namespace DigitalArchive
 
         public string fileName; // file.Properties.System.FileName.Value;  //tblItems
         public string fileLocation; //path of the file - should be from root of catalogue //tblItems
-        public byte[] fileHash; // file.Properties.System.GetHashCode().ToString();  //tblItems
+        public string fileHash; // file.Properties.System.GetHashCode().ToString();  //tblItems
         public string fileOwner = ""; // this is not a mandatory field but an empty string may handle better than null  //tblItems
         public Boolean fileCopyright = default; // is the file subject to copyright default false  //tblItems
         public Boolean fileGDPR = default; // is the file subject to GDPR default false  //tblItems

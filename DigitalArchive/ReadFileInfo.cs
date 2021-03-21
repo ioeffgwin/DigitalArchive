@@ -57,7 +57,7 @@ namespace DigitalArchive
         public string fileMetaDateTaken; // file.Properties.System.ItemDate.Value.ToString();
         public string fileMetaAuthor; //ideally from author keyword
         public string fileMetaKeyword; // string with comma delimted keywords. ideally from file keywords
-        
+
 
 
 
@@ -67,72 +67,80 @@ namespace DigitalArchive
             {
 
 
-                FileAttributes attributes = File.GetAttributes(filePath);
-                //Is it a directory
-                this.fileDir = false;
-                if ((attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                //Is it a valid file
+                if (File.Exists(filePath))
                 {
-                    this.fileDir = true;
-                }
-                //is it a system file
-                this.fileSystem = false;
-                if ((attributes & FileAttributes.System) == FileAttributes.System)
-                {
-                    this.fileSystem = true;
-                }
-                if (this.fileDir == false)
-                {
-                    // Read and Write:
-                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                    {
-                        this.fileMetaReadOnly = "Yes";
-                    }
-                    else
-                    {
-                        this.fileMetaReadOnly = "No";
-                    }
-                    // hidden file
-                    if ((attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
-                    {
-                        this.fileMetaHidden = "Yes";
-                    }
-                    else
-                    {
-                        this.fileMetaHidden = "No";
-                    }
-                    this.fileLocation = Path.GetDirectoryName(filePath);
+                    FileAttributes attributes = File.GetAttributes(filePath);
 
-                    var file = ShellFile.FromFilePath(filePath);
-                    //date created
-                    this.fileMetaDateCreated = file.Properties.System.DateCreated.Value.ToString();
-                    //date modified
-                    this.fileMetaDateModified = file.Properties.System.DateModified.Value.ToString();
-                    //type of file (extension)
-                    this.fileMetaType = file.Properties.System.FileExtension.Value;
-                    //filename
-                    this.fileName = file.Properties.System.FileName.Value;
-                    //filesize in bytes
-                    this.fileMetaSize = file.Properties.System.Size.Value.ToString();
-                    //date taken (might be null)
-                    this.fileMetaDateTaken = file.Properties.System.ItemDate.Value.ToString();
-                    //file hash sha-256
-                    this.fileHash = CheckSum.Main(filePath);
+                    //Is it a directory
+                    this.fileDir = false;
+                    if ((attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        this.fileDir = true;
+                    }
+                    //is it a system file
+                    this.fileSystem = false;
+                    if ((attributes & FileAttributes.System) == FileAttributes.System)
+                    {
+                        this.fileSystem = true;
+                    }
+                    if (this.fileDir == false)
+                    {
+                        // Read and Write:
+                        if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            this.fileMetaReadOnly = "Yes";
+                        }
+                        else
+                        {
+                            this.fileMetaReadOnly = "No";
+                        }
+                        // hidden file
+                        if ((attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                        {
+                            this.fileMetaHidden = "Yes";
+                        }
+                        else
+                        {
+                            this.fileMetaHidden = "No";
+                        }
 
-                    /* this will only work for pics and movies
-                    var directories = ImageMetadataReader.ReadMetadata(filePath);
-                    var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                    var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTime);
-                    */
+                        // this needs to be the path relative to the catalogue
 
-                    //file authors
-                    //file keywords
+                        this.fileLocation = Path.GetDirectoryName(filePath).Replace(Globals.curCatPath, "");
 
-                    /* this doesn't work. Not sure why
-                    string[] fileMetaKeywords = file.Properties.System.Keywords.Value; //null
-                    this.fileMetaKeyword = String.Join(",", fileKeywords);
-                    string[] fileMetaAuthors = file.Properties.System.Author.Value;
-                    this.fileMetaAuthor = String.Join(",", fileMetaAuthors);
-                    */
+                        var file = ShellFile.FromFilePath(filePath);
+                        //date created
+                        this.fileMetaDateCreated = file.Properties.System.DateCreated.Value.ToString();
+                        //date modified
+                        this.fileMetaDateModified = file.Properties.System.DateModified.Value.ToString();
+                        //type of file (extension)
+                        this.fileMetaType = file.Properties.System.FileExtension.Value;
+                        //filename
+                        this.fileName = file.Properties.System.FileName.Value;
+                        //filesize in bytes
+                        this.fileMetaSize = file.Properties.System.Size.Value.ToString();
+                        //date taken (might be null)
+                        this.fileMetaDateTaken = file.Properties.System.ItemDate.Value.ToString();
+                        //file hash sha-256
+                        this.fileHash = CheckSum.Main(filePath);
+
+                        /* this will only work for pics and movies
+                        var directories = ImageMetadataReader.ReadMetadata(filePath);
+                        var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                        var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTime);
+                        */
+
+                        //file authors
+                        //file keywords
+
+                        /* this doesn't work. Not sure why
+                        string[] fileMetaKeywords = file.Properties.System.Keywords.Value; //null
+                        this.fileMetaKeyword = String.Join(",", fileKeywords);
+                        string[] fileMetaAuthors = file.Properties.System.Author.Value;
+                        this.fileMetaAuthor = String.Join(",", fileMetaAuthors);
+                        */
+                    }
                 }
 
             }
@@ -150,5 +158,5 @@ namespace DigitalArchive
 
 
 
-    
+
 }

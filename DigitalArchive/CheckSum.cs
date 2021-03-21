@@ -20,6 +20,7 @@ namespace DigitalArchive
          * SHA256 returned as byte[] (stored as BLOB(32) in SQLite)
          * 
          */
+        public static int itemID;
         public static string Main(String filePath)
         {
             string checkfile = filePath;
@@ -90,37 +91,44 @@ namespace DigitalArchive
              * 
              */
             int checkOK = 0;
-            string check1 = Main(fileDir + "\\" + fileName);
-            string check2 = default;
-            int itemID = 0;
+            if (fileDir != null)
             {
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
 
-                string sql = "SELECT itemChecksum, itemID FROM tblItems WHERE itemName = '" + fileName + "' " +
-                    "AND itemPath = '" + fileDir + "';";
-
-                SQLiteDataReader sqlRead;
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sql;
-
-                sqlRead = sql_cmd.ExecuteReader();
-                while (sqlRead.Read())
+                string check1 = Main(fileDir + "\\" + fileName);
+                string check2 = default;
+                string filePath = null;
+                if (fileDir != null) filePath = fileDir.Replace(Globals.curCatPath, "");
                 {
-                    check2 = sqlRead.GetString(0);
-                    itemID = sqlRead.GetInt32(1);
-                    checkOK = 1;
-                }
-                cat_conn.Close();
+                    SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
+                    cat_conn.Open();
 
-                if (check1 == check2)
-                {
-                    checkOK = 2;
+                    string sql = "SELECT itemChecksum, itemID FROM tblItems WHERE itemName = '" + fileName + "' " +
+                        "AND itemPath = '" + filePath + "';";
+
+                    SQLiteDataReader sqlRead;
+                    SQLiteCommand sql_cmd;
+                    sql_cmd = cat_conn.CreateCommand();
+                    sql_cmd.CommandText = sql;
+
+                    sqlRead = sql_cmd.ExecuteReader();
+                    while (sqlRead.Read())
+                    {
+                        check2 = sqlRead.GetString(0);
+                        itemID = sqlRead.GetInt32(1);
+
+                        checkOK = 1;
+                    }
+                    cat_conn.Close();
+
+                    if (check1 == check2 && check1 != null)
+                    {
+                        checkOK = 2;
+                    }
                 }
             }
             if (checkOK == 1) ChangeLog.Main("Checksum different: " + fileName, itemID);
             return checkOK;
+            
         }
 
     }

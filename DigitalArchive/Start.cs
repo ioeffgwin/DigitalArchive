@@ -39,6 +39,7 @@ namespace DigitalArchive
 
             toolStripMessage.Text = "";
             toolStripCurCat.Text = "No Catalogue opened";
+            this.Text = "Digital Archive";
             //add in code to read data from digarch.dacat
             string curCatID;
             // if no data not used before some data required
@@ -57,7 +58,11 @@ namespace DigitalArchive
             {
                 Catalogue curCat = new Catalogue(curCatID);
                 toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
-                PopulateTreeView();
+                this.Text = "Digital Archive " + Globals.curCatName;
+                if (Globals.curCatDesc != null)
+                {
+                    PopulateTreeView();
+                }
 
             }
 
@@ -115,10 +120,12 @@ namespace DigitalArchive
             if (curCat.catName == null)
             {
                 toolStripCurCat.Text = "Catalogue not found";
+                this.Text = "Digital Archive";
             }
             else
             {
                 toolStripCurCat.Text = "Current Catalogue: " + curCat.catName;
+                this.Text = "Digital Archive " + Globals.curCatName;
 
             }
             PopulateTreeView();
@@ -233,6 +240,7 @@ namespace DigitalArchive
                         finally
                         {
                             toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
+                            this.Text = "Digital Archive " + Globals.curCatName;
                         }
 
                     }
@@ -266,7 +274,6 @@ namespace DigitalArchive
 
                 //get new path from selection of catalogue
                 string catPath;
-                //catPath = "D:\\Public\\Photos\\Cosmeston"; // this value will need to be set from catalogue path
                 catPath = Globals.curCatPath;
                 if (catPath == null) catPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 List<string> list = new List<string>();
@@ -377,6 +384,7 @@ namespace DigitalArchive
                                             break;
 
                                     }
+                                    n.Tag = CheckSum.itemID;
                                     node.Nodes.Add(n);
                                 }
 
@@ -422,18 +430,19 @@ namespace DigitalArchive
                                 break;
 
                         }
-
+                        n.Tag = CheckSum.itemID;
                         e.Node.Nodes.Add(n);
 
                     }
 
                     //add missing files to treeview - these are files in the database that aren't in the folder
                     List<int> missing = Catalogue.MissingItems();
-                    foreach(int missingFile in missing)
+                    foreach (int missingFile in missing)
                     {
                         string[] filenames = Catalogue.GetFileName(missingFile);
                         TreeNode n;
                         n = new TreeNode(filenames[0], 7, 7);
+                        n.Tag = missingFile;
                         e.Node.Nodes.Add(n);
                     }
                     treeViewCat.ExpandAll();
@@ -575,6 +584,7 @@ namespace DigitalArchive
         {
             // makes new catalogue subform visible when option slected in drop down
             pnlNewCat.Visible = true;
+            lblLotsOfInfo.Visible = false;
         }
 
         private void openCatalogueToolStripMenuItem_Click(object sender, EventArgs e)
@@ -657,11 +667,9 @@ namespace DigitalArchive
         private void treeViewCat_AfterSelect(object sender, TreeViewEventArgs e)
         {
             string nodeDets;
-            nodeDets = treeViewCat.SelectedNode.Text;
-
+            nodeDets = "Selected: (" + treeViewCat.SelectedNode.Tag + ") " + treeViewCat.SelectedNode.Text;
+            toolStripMessage.Text = nodeDets;
             // need to do somthing with this
-
-
         }
 
         private string GetCatalogueLoc()
@@ -709,6 +717,7 @@ namespace DigitalArchive
             txtCatName.Text = null;
             txtCatDesc.Text = null;
             pnlNewCat.Visible = false;
+            lblLotsOfInfo.Visible = true;
             toolStripMessage.Text = msg;
             PopulateTreeView();
             //update the recent files menu
@@ -731,6 +740,7 @@ namespace DigitalArchive
             txtCatName.Text = null;
             txtCatDesc.Text = null;
             pnlNewCat.Visible = false;
+            lblLotsOfInfo.Visible = true;
             toolStripMessage.Text = null;
 
         }
@@ -827,8 +837,8 @@ namespace DigitalArchive
         private void btnScanChanges_Click(object sender, EventArgs e)
         {
             //scan for any changes between actual files and info stored in catalogue
+            PopulateTreeView();
 
-            // compare hash/checksum
 
         }
 
@@ -838,9 +848,6 @@ namespace DigitalArchive
             // all files must be within this file structure (they can be copied in)
             // user needs to create a new catalogue for other areas
 
-            //have any updates occurred
-            Boolean bUpdates = false;
-
             //iterate throiugh each file in the tree view
             foreach (TreeNode nodeTop in treeViewCat.Nodes)
             {
@@ -848,13 +855,16 @@ namespace DigitalArchive
                 //options for all files in current structure (except DACAT folder!)
                 if (nodeTop.Text != "DACAT")
                 {
-                    bUpdates = CaptureFileInfo(nodeTop);
+                    CaptureFileInfo(nodeTop);
+
                 }
             }
+            //have any updates occurred
 
-            if (bUpdates == true)
+            if (filesUpdated > 0)
             {
-                toolStripMessage.Text = "Import Complete";
+                toolStripMessage.Text = filesUpdated + " files imported";
+                filesUpdated = 0;
                 PopulateTreeView();
 
             }
@@ -864,10 +874,11 @@ namespace DigitalArchive
             }
 
         }
-        private Boolean CaptureFileInfo(TreeNode nodeTop, Boolean boolUp = default)
+
+        static int filesUpdated = 0;
+        private void CaptureFileInfo(TreeNode nodeTop)
         {
-            Boolean bUpdates = boolUp;
-            
+
             ReadFileInfo fileInfo = new ReadFileInfo();
 
 
@@ -878,38 +889,51 @@ namespace DigitalArchive
                 int alreadyHere = CheckSum.CheckCheckSum(fileInfo.fileLocation, fileInfo.fileName);
                 if ((fileInfo.fileSystem == false && fileInfo.fileDir == false && alreadyHere == 0))
                 {
-                    CatalogueItemMetaUpdate intoCat = new CatalogueItemMetaUpdate();
-                    //add file information to tbl Items
-                    intoCat.AddItem(fileInfo.fileName, fileInfo.fileLocation, fileInfo.fileHash, fileInfo.fileOwner);
-                    //get ItemID
-                    int myItemID = intoCat.itemID;
-                    //add meta data to tblMetaItems for each metaTitle if available
-                    if (fileInfo.fileMetaType != null) intoCat.AddMetaItem(myItemID, true, "TYPE OF FILE", "string", fileInfo.fileMetaType);
-                    if (fileInfo.fileName != null) intoCat.AddMetaItem(myItemID, true, "NAME", "string", fileInfo.fileName);
-                    if (fileInfo.fileMetaSize != null) intoCat.AddMetaItem(myItemID, true, "SIZE", "INT", fileInfo.fileMetaSize);
-                    if (fileInfo.fileMetaDateCreated != null) intoCat.AddMetaItem(myItemID, true, "CREATED", "DateTime", fileInfo.fileMetaDateCreated);
-                    if (fileInfo.fileMetaDateModified != null) intoCat.AddMetaItem(myItemID, true, "MODIFIED", "DateTime", fileInfo.fileMetaDateModified);
-                    if (fileInfo.fileMetaReadOnly != null) intoCat.AddMetaItem(myItemID, true, "READ ONLY", "Boolean", fileInfo.fileMetaReadOnly);
-                    if (fileInfo.fileLocation != null) intoCat.AddMetaItem(myItemID, true, "LOCATION", "string", fileInfo.fileLocation);
-                    if (fileInfo.fileMetaHidden != null) intoCat.AddMetaItem(myItemID, true, "HIDDEN", "Boolean", fileInfo.fileMetaHidden);
-                    if (fileInfo.fileMetaDateTaken != null) intoCat.AddMetaItem(myItemID, true, "DATE TAKEN", "DateTime", fileInfo.fileMetaDateTaken);
-                    if (fileInfo.fileMetaKeyword != null) intoCat.AddMetaItem(myItemID, true, "KEYWORDS", "string", fileInfo.fileMetaKeyword);
-                    //update catalogue latest version
-                    intoCat.SetCatalogueVer();
-                    //update change log
-                    ChangeLog.Main("New File Added: " + fileInfo.fileName, myItemID);
-                    bUpdates = true;
+                    if (fileInfo.fileName != null)
+                    {
+                        CatalogueItemMetaUpdate intoCat = new CatalogueItemMetaUpdate();
+                        //add file information to tbl Items
+                        intoCat.AddItem(fileInfo.fileName, fileInfo.fileLocation, fileInfo.fileHash, fileInfo.fileOwner);
+                        //get ItemID
+                        int myItemID = intoCat.itemID;
+                        //add meta data to tblMetaItems for each metaTitle if available
+                        if (fileInfo.fileMetaType != null) intoCat.AddMetaItem(myItemID, true, "TYPE OF FILE", "string", fileInfo.fileMetaType);
+                        if (fileInfo.fileName != null) intoCat.AddMetaItem(myItemID, true, "NAME", "string", fileInfo.fileName);
+                        if (fileInfo.fileMetaSize != null) intoCat.AddMetaItem(myItemID, true, "SIZE", "INT", fileInfo.fileMetaSize);
+                        if (fileInfo.fileMetaDateCreated != null) intoCat.AddMetaItem(myItemID, true, "CREATED", "DateTime", fileInfo.fileMetaDateCreated);
+                        if (fileInfo.fileMetaDateModified != null) intoCat.AddMetaItem(myItemID, true, "MODIFIED", "DateTime", fileInfo.fileMetaDateModified);
+                        if (fileInfo.fileMetaReadOnly != null) intoCat.AddMetaItem(myItemID, true, "READ ONLY", "Boolean", fileInfo.fileMetaReadOnly);
+                        if (fileInfo.fileLocation != null) intoCat.AddMetaItem(myItemID, true, "LOCATION", "string", fileInfo.fileLocation);
+                        if (fileInfo.fileMetaHidden != null) intoCat.AddMetaItem(myItemID, true, "HIDDEN", "Boolean", fileInfo.fileMetaHidden);
+                        if (fileInfo.fileMetaDateTaken != null) intoCat.AddMetaItem(myItemID, true, "DATE TAKEN", "DateTime", fileInfo.fileMetaDateTaken);
+                        if (fileInfo.fileMetaKeyword != null) intoCat.AddMetaItem(myItemID, true, "KEYWORDS", "string", fileInfo.fileMetaKeyword);
+                        //update catalogue latest version
+                        intoCat.SetCatalogueVer();
+                        //update change log
+                        ChangeLog.Main("New File Added: " + fileInfo.fileName, myItemID);
+                        filesUpdated++;
+
+                    }
 
                 }
                 //recursively call this method again until entire tree covered
-                CaptureFileInfo(nodeSub, bUpdates);
+                CaptureFileInfo(nodeSub);
 
             }
 
-            return bUpdates;
             //or selected files in current structure
             //later
 
+        }
+
+        private void treeViewCat_Leave(object sender, EventArgs e)
+        {
+            lblLotsOfInfo.Visible = false;
+        }
+
+        private void scanForChangesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PopulateTreeView();
         }
     }
 }

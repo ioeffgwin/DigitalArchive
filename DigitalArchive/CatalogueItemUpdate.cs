@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
+using System.IO;
 
 namespace DigitalArchive
 {
-    public class CatalogueItemUpdate 
+    public class CatalogueItemUpdate
     {
         /*
          * J Vincent
@@ -33,7 +34,7 @@ namespace DigitalArchive
         public static void Main()
         {
 
-            
+
 
         }
 
@@ -49,7 +50,7 @@ namespace DigitalArchive
 
 
         }
-        
+
 
         public Boolean AddItem(string itemName, string itemPath, string itemChecksum, string itemOwner, Boolean itemCopyright = default, Boolean itemGDPR = default)
         {
@@ -73,10 +74,14 @@ namespace DigitalArchive
                 // add things to tblItems and tblItemMeta
                 SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
                 cat_conn.Open();
+                // this needs to be the path relative to the catalogue
+
+                //string localPath = Path.GetDirectoryName(itemPath);
+
 
                 string sqli = "INSERT INTO tblItems (itemAdded, itemAddedBy, itemName, itemPath, itemChecksum, itemLastChange, itemOwner,itemCopyright,itemGDPR) " +
-                    "VALUES ('" + DateTime.Now + "', '" + Globals.usersName + "', '" + itemName + "', '" + itemPath + "', '" +itemChecksum +"', " +
-                    "'" + DateTime.Now + "', '" + itemOwner + "', '" + itemCopyright + "', '" + itemGDPR +"');";
+                    "VALUES ('" + DateTime.Now + "', '" + Globals.usersName + "', '" + itemName + "', '" + itemPath + "', '" + itemChecksum + "', " +
+                    "'" + DateTime.Now + "', '" + itemOwner + "', '" + itemCopyright + "', '" + itemGDPR + "');";
                 SQLiteCommand sql_cmd;
                 sql_cmd = cat_conn.CreateCommand();
                 sql_cmd.CommandText = sqli;
@@ -98,7 +103,7 @@ namespace DigitalArchive
             SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
             cat_conn.Open();
 
-            string sql = "SELECT itemID FROM tblItems WHERE itemName = '" + itemName +"' " +
+            string sql = "SELECT itemID FROM tblItems WHERE itemName = '" + itemName + "' " +
                 "AND itemPath = '" + itemPath + "' AND itemChecksum = '" + itemChecksum + "';";
             SQLiteDataReader sqlRead;
             SQLiteCommand sql_cmd;

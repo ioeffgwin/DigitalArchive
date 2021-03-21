@@ -28,16 +28,16 @@ namespace DigitalArchive
         public string catDateCreated; //datetime really
         public string catDateLastUpdate; //datetime really
 
-        public Catalogue(string catPath)
+        public Catalogue(string catPathFull)
         {
             //check if path is valid
 
-            if (File.Exists(catPath))
-                {
+            if (File.Exists(catPathFull))
+            {
                 try
                 {
                     string sql = "SELECT catName, catUUID, catCreated, catDesc, catVersion, catLastUpdate FROM tblCatalogue LIMIT 1";
-                    SQLiteConnection cat_Conn = new SQLiteConnection("Data Source=" + catPath + "; Version = 3; Compress = True;");
+                    SQLiteConnection cat_Conn = new SQLiteConnection("Data Source=" + catPathFull + "; Version = 3; Compress = True;");
                     cat_Conn.Open();
                     SQLiteDataReader sqlRead;
                     SQLiteCommand sql_cmd;
@@ -48,13 +48,14 @@ namespace DigitalArchive
                     sqlRead = sql_cmd.ExecuteReader();
                     while (sqlRead.Read())
                     {
-                        this.catUUID = sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
+                        this.catUUID = catPathFull;//sqlRead.GetString(sqlRead.GetOrdinal("catUUID"));
                         this.catName = sqlRead.GetString(sqlRead.GetOrdinal("catName"));
                         this.catDesc = sqlRead.GetString(sqlRead.GetOrdinal("catDesc"));
                         this.catVer = sqlRead.GetString(sqlRead.GetOrdinal("catVersion"));
                         this.catDateCreated = sqlRead.GetString(sqlRead.GetOrdinal("catCreated"));
                         this.catDateLastUpdate = sqlRead.GetString(sqlRead.GetOrdinal("catLastUpdate"));
-                        this.catPath = Path.GetDirectoryName(this.catUUID).Replace("\\DACAT","");
+                        this.catPath = Path.GetDirectoryName(this.catUUID).Replace("\\DACAT", "");
+
                     }
                     cat_Conn.Close();
                     //update app to know what the most recent catalogue is
@@ -102,7 +103,7 @@ namespace DigitalArchive
             string sqlu = "UPDATE tblAppSystem SET LastCatalogue = '" + this.catUUID + "'; ";
             // insert tblCatsOpened
             string sqli = "INSERT INTO tblCatsOpened (catUUID, catName, catDateOpened, catPath) " +
-                "VALUES ('" + this.catUUID + "','" + this.catName + "','" + DateTime.Now + "','" + Path.GetDirectoryName(this.catUUID).Replace("\\DACAT", "") + "');";
+                "VALUES ('" + this.catUUID + "','" + this.catName + "','" + DateTime.Now + "','" + this.catPath + "');";
 
             using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
             {
@@ -144,7 +145,7 @@ namespace DigitalArchive
                         fileID = sqlRead.GetInt32(0);
                         fileName = sqlRead.GetString(1);
                         filePath = sqlRead.GetString(2);
-                        if(File.Exists(filePath + "\\" + fileName) == false)
+                        if (File.Exists(Globals.curCatPath + filePath + "\\" + fileName) == false)
                         {
                             missingFiles.Add(fileID);
                         }

@@ -56,17 +56,19 @@ namespace DigitalArchive
                 else
                 {
                     //defaults user name from PC
-                    Globals.usersName = Environment.UserName; 
+                    Globals.usersName = Environment.UserName;
                 }
 
                 //update app DB
                 // update tblAppSystemb(no where clause as only one line should be in use)
-                string sqlu = "UPDATE tblAppSystem SET userName = '" + Globals.usersName + "'; ";
+                string sqlu = "UPDATE tblAppSystem SET userName = @usersName; ";
                 using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
                 {
                     conn.Open();
                     using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu, conn))
                     {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@usersName", Globals.usersName));
+
                         sql_cmd.ExecuteNonQuery();
                     }
                     conn.Close();
@@ -77,8 +79,6 @@ namespace DigitalArchive
                 throw e;
             }
         }
-
-
 
     }
 

@@ -21,6 +21,17 @@ namespace DigitalArchive
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            /*
+             * J Vincent
+             * 
+             * Code added to that autogenrated by visual studio
+             * test to see if an application database exists
+             * if not use the FirstUse() method to create one 
+             * 
+             * 
+             */
+
             //test to see if first use
 
             // Open the connection:
@@ -43,7 +54,7 @@ namespace DigitalArchive
             }
             catch (Exception)
             {
-                //no sys database - run first use screen. Get UserName from PC.
+                //no sys database - run first use screen. Get default UserName from PC - user can change this later
                 string myName = Environment.UserName;
                 Globals.usersName = myName;
                 FirstUse(myName);
@@ -55,6 +66,15 @@ namespace DigitalArchive
 
         static void FirstUse(string userName)
         {
+            /*
+             * J Vincent
+             * application needs a SQLite database to store information about this instanmce of the app
+             * and any catalogues that have been opened with it.
+             * 
+             * Creates database "digarch.dacat" adajacent to exe file for app
+             * 
+             */
+
             SQLiteConnection sys_Conn = new SQLiteConnection(Globals.connApp + " New = True; Compress = True; ");
             // Open the connection:
             try

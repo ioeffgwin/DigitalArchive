@@ -10,7 +10,7 @@ using System.IO;
 
 namespace DigitalArchive
 {
-    public class NewCatalogue 
+    public class NewCatalogue
     {
 
         /*
@@ -28,13 +28,25 @@ namespace DigitalArchive
 
         public NewCatalogue(string catPath, string catName, string catDesc)
         {
+            /*
+             * J Vincent
+             * CReate catalogue file in own folder within catalogue root
+             * catalogue name is a Globally Unique ID + extension
+             * this can be useful to identify different versions of the same catalogue 
+             * also include readme file giving name of catalogue and instructions not to delete.
+             * 
+             * 
+             * 
+             * 
+             */
+
             {
                 string CatUUID;
                 try
                 {
                     throw new NotImplementedException();
                 }
-                catch (NotImplementedException notImp)
+                catch (NotImplementedException snotImp)
                 {
                     Boolean bName = false;
                     Boolean bDesc = false;
@@ -53,7 +65,10 @@ namespace DigitalArchive
                         //create DACAT folder for catalogue to sit in
                         Directory.CreateDirectory(catPath + "\\DACAT");
                         //create readme.txt with instructions not to delete!
-                        File.WriteAllText(catPath + "\\DACAT\\" + catName.Replace(' ', '_') + "_ReadMe.txt", DateTime.Today.ToString() + "\r\nDigital Archive: " + catName + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
+                        File.WriteAllText(catPath + "\\DACAT\\" + catName.Replace(' ', '_') + "_ReadMe.txt", DateTime.Now.ToString() +
+                            "\r\nDigital Archive: " + catName + "\r\n\r\n" + catDesc + "\r\n" +
+                            "\r\nDo not delete the catalogue file " + myGuid + ".dacat " +
+                            "\r\n\r\nFurther Instructions for the catalogue and application to go here:");
                         //full path for catalogue
                         CatUUID = catPath + "\\DACAT\\" + myGuid + ".dacat";
                         //create cataloge and connection
@@ -100,14 +115,17 @@ namespace DigitalArchive
                         DateTime theDate = DateTime.Now;
                         string newVersion = theDate.ToString("yyyyMMddHHmmssFFF");
                         //Insert startup information into tables
-                        sql = "INSERT INTO tblCatalogue VALUES ('" + catName +
-                            "', '" + CatUUID + "', '" + DateTime.Now +
-                            "', '" + catDesc + "', '"+newVersion+"', '" + theDate + "'); ";
+                        sql = "INSERT INTO tblCatalogue VALUES (@catName," +
+                            "@catUUID, '" + DateTime.Now +
+                            "', @catDesc, '" + newVersion + "', '" + theDate + "'); ";
                         //these are the types of Metadata we want to store (keywords can be added)
                         sql += "INSERT INTO tbllkpMetaFormat (metaTitle)" +
                             "VALUES ('TYPE OF FILE'), ('NAME'), ('SIZE'), ('CREATED'), ('MODIFIED'), ('READ ONLY'), ('LOCATION'), " +
                             "('HIDDEN'), ('DATE TAKEN'), ('KEYWORDS');";
                         command = new SQLiteCommand(sql, dbConn);
+                        command.Parameters.Add(new SQLiteParameter("@catName", catName));
+                        command.Parameters.Add(new SQLiteParameter("@catUUID", CatUUID));
+                        command.Parameters.Add(new SQLiteParameter("@catDesc", catDesc));
                         command.ExecuteNonQuery();
                         dbConn.Close();
                         // add data to digarch.dacat to update with latest catalogue
@@ -116,7 +134,7 @@ namespace DigitalArchive
                         // update info on screen
                         this.retMessage = "Catalogue " + curCat.catUUID + " has been created";
 
-                        
+
                     }
                     else
                     {

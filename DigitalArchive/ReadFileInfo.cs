@@ -17,7 +17,7 @@ namespace DigitalArchive
 
     /*
      * Jeff Vincent 
-     * get meta info from files
+     * get meta information from files
      * 
      * 
      * 
@@ -124,6 +124,9 @@ namespace DigitalArchive
                         this.fileMetaDateTaken = file.Properties.System.ItemDate.Value.ToString();
                         //file hash sha-256
                         this.fileHash = CheckSum.Main(filePath);
+
+
+                        // the following need to be resolved before this app can properly go live
 
                         /* this will only work for pics and movies
                         var directories = ImageMetadataReader.ReadMetadata(filePath);

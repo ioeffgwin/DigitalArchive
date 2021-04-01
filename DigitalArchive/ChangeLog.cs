@@ -12,13 +12,13 @@ namespace DigitalArchive
     public class ChangeLog
     {
 
-    /* J Vincent
-     * update logs for any changes made
-     * update app and catalogue DB
-     * each time a chnage is made the catalogue version changes.
-     * This enables different versions of a catalogue to be compared
-     * 
-     */
+        /* J Vincent
+         * update logs for any changes made
+         * update app and catalogue DB
+         * each time a chnage is made the catalogue version changes.
+         * This enables different versions of a catalogue to be compared
+         * 
+         */
 
         public static void Main(string logUpdate, int itemID)
         {
@@ -35,7 +35,7 @@ namespace DigitalArchive
 
             try
             {
-                string sqli; 
+                string sqli;
                 //Update App
                 SQLiteConnection app_conn = new SQLiteConnection(Globals.connApp);
                 app_conn.Open();
@@ -69,6 +69,26 @@ namespace DigitalArchive
             }
 
         }
+
+        public void GetChangeLog(string AppOrCat)
+        {
+            /*
+             * J Vincent
+             * open new form showing change log for either current Catalogue or the  Application
+             * Any changes to catalogue are recorded in the catalogue database and the application database
+             * so any changes that have been made can be seen
+             * important for a catalogue that may be shared by many people
+             * (not to be used for finger pointing though - we all make mistakes)
+             * The catalogue version changes each time a change is made, so if different copies can be compared
+             * 
+             */
+
+            //Change logs show the date and version of the catalogue, the user making the change and details of the change made
+
+
+        }
+
+
 
 
     }

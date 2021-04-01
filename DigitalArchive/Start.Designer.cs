@@ -48,6 +48,7 @@ namespace DigitalArchive
             this.importContentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scanForChangesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scanForDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keywordsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripUserName = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripCurCat = new System.Windows.Forms.ToolStripStatusLabel();
@@ -69,11 +70,22 @@ namespace DigitalArchive
             this.btnScanChanges = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
             this.lblLotsOfInfo = new System.Windows.Forms.Label();
+            this.pnlKeywords = new System.Windows.Forms.Panel();
+            this.btnKeywordsCancels = new System.Windows.Forms.Button();
+            this.btnKeywords = new System.Windows.Forms.Button();
+            this.txtKeywords = new System.Windows.Forms.TextBox();
+            this.lblKeywords = new System.Windows.Forms.Label();
+            this.pnlSearch = new System.Windows.Forms.Panel();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.lblSearch = new System.Windows.Forms.Label();
+            this.txtSearch = new System.Windows.Forms.TextBox();
             btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.pnlNewCat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.epName)).BeginInit();
+            this.pnlKeywords.SuspendLayout();
+            this.pnlSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGetFolder
@@ -171,7 +183,8 @@ namespace DigitalArchive
             this.editCatalogueToolStripMenuItem,
             this.importContentToolStripMenuItem,
             this.scanForChangesToolStripMenuItem,
-            this.scanForDuplicatesToolStripMenuItem});
+            this.scanForDuplicatesToolStripMenuItem,
+            this.keywordsToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(108, 29);
             this.toolStripMenuItem1.Text = "Catalogue";
@@ -180,49 +193,56 @@ namespace DigitalArchive
             // addCatalogueToolStripMenuItem
             // 
             this.addCatalogueToolStripMenuItem.Name = "addCatalogueToolStripMenuItem";
-            this.addCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.addCatalogueToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.addCatalogueToolStripMenuItem.Text = "New Catalogue";
             this.addCatalogueToolStripMenuItem.Click += new System.EventHandler(this.addCatalogueToolStripMenuItem_Click);
             // 
             // openCatalogueToolStripMenuItem
             // 
             this.openCatalogueToolStripMenuItem.Name = "openCatalogueToolStripMenuItem";
-            this.openCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openCatalogueToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.openCatalogueToolStripMenuItem.Text = "Open Catalogue";
             this.openCatalogueToolStripMenuItem.Click += new System.EventHandler(this.openCatalogueToolStripMenuItem_Click);
             // 
             // openRecentToolStripMenuItem
             // 
             this.openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
-            this.openRecentToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openRecentToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.openRecentToolStripMenuItem.Text = "Open Recent";
             this.openRecentToolStripMenuItem.Click += new System.EventHandler(this.openRecentToolStripMenuItem_Click);
             // 
             // editCatalogueToolStripMenuItem
             // 
             this.editCatalogueToolStripMenuItem.Name = "editCatalogueToolStripMenuItem";
-            this.editCatalogueToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.editCatalogueToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.editCatalogueToolStripMenuItem.Text = "Edit Catalogue";
             // 
             // importContentToolStripMenuItem
             // 
             this.importContentToolStripMenuItem.Name = "importContentToolStripMenuItem";
-            this.importContentToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.importContentToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.importContentToolStripMenuItem.Text = "Import Content";
             this.importContentToolStripMenuItem.Click += new System.EventHandler(this.btnImport_Click);
             // 
             // scanForChangesToolStripMenuItem
             // 
             this.scanForChangesToolStripMenuItem.Name = "scanForChangesToolStripMenuItem";
-            this.scanForChangesToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.scanForChangesToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.scanForChangesToolStripMenuItem.Text = "Scan for Changes";
             this.scanForChangesToolStripMenuItem.Click += new System.EventHandler(this.scanForChangesToolStripMenuItem_Click);
             // 
             // scanForDuplicatesToolStripMenuItem
             // 
             this.scanForDuplicatesToolStripMenuItem.Name = "scanForDuplicatesToolStripMenuItem";
-            this.scanForDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.scanForDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
             this.scanForDuplicatesToolStripMenuItem.Text = "Scan for Duplicates";
+            // 
+            // keywordsToolStripMenuItem
+            // 
+            this.keywordsToolStripMenuItem.Name = "keywordsToolStripMenuItem";
+            this.keywordsToolStripMenuItem.Size = new System.Drawing.Size(266, 34);
+            this.keywordsToolStripMenuItem.Text = "Keywords";
+            this.keywordsToolStripMenuItem.Click += new System.EventHandler(this.keywordsToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -437,11 +457,97 @@ namespace DigitalArchive
             this.lblLotsOfInfo.TabIndex = 22;
             this.lblLotsOfInfo.Text = "File Info for Current File will go here";
             // 
+            // pnlKeywords
+            // 
+            this.pnlKeywords.Controls.Add(this.btnKeywordsCancels);
+            this.pnlKeywords.Controls.Add(this.btnKeywords);
+            this.pnlKeywords.Controls.Add(this.txtKeywords);
+            this.pnlKeywords.Controls.Add(this.lblKeywords);
+            this.pnlKeywords.Location = new System.Drawing.Point(349, 505);
+            this.pnlKeywords.Name = "pnlKeywords";
+            this.pnlKeywords.Size = new System.Drawing.Size(771, 100);
+            this.pnlKeywords.TabIndex = 23;
+            this.pnlKeywords.Visible = false;
+            // 
+            // btnKeywordsCancels
+            // 
+            this.btnKeywordsCancels.Location = new System.Drawing.Point(367, 48);
+            this.btnKeywordsCancels.Name = "btnKeywordsCancels";
+            this.btnKeywordsCancels.Size = new System.Drawing.Size(201, 31);
+            this.btnKeywordsCancels.TabIndex = 3;
+            this.btnKeywordsCancels.Text = "cancel";
+            this.btnKeywordsCancels.UseVisualStyleBackColor = true;
+            this.btnKeywordsCancels.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnKeywords
+            // 
+            this.btnKeywords.Location = new System.Drawing.Point(149, 48);
+            this.btnKeywords.Name = "btnKeywords";
+            this.btnKeywords.Size = new System.Drawing.Size(201, 31);
+            this.btnKeywords.TabIndex = 2;
+            this.btnKeywords.Text = "Add Keywords";
+            this.btnKeywords.UseVisualStyleBackColor = true;
+            this.btnKeywords.Click += new System.EventHandler(this.btnKeywords_Click);
+            // 
+            // txtKeywords
+            // 
+            this.txtKeywords.Location = new System.Drawing.Point(151, 15);
+            this.txtKeywords.Name = "txtKeywords";
+            this.txtKeywords.Size = new System.Drawing.Size(564, 26);
+            this.txtKeywords.TabIndex = 1;
+            // 
+            // lblKeywords
+            // 
+            this.lblKeywords.AutoSize = true;
+            this.lblKeywords.Location = new System.Drawing.Point(64, 15);
+            this.lblKeywords.Name = "lblKeywords";
+            this.lblKeywords.Size = new System.Drawing.Size(77, 20);
+            this.lblKeywords.TabIndex = 0;
+            this.lblKeywords.Text = "Keywords";
+            // 
+            // pnlSearch
+            // 
+            this.pnlSearch.Controls.Add(this.btnSearch);
+            this.pnlSearch.Controls.Add(this.lblSearch);
+            this.pnlSearch.Controls.Add(this.txtSearch);
+            this.pnlSearch.Location = new System.Drawing.Point(428, 617);
+            this.pnlSearch.Name = "pnlSearch";
+            this.pnlSearch.Size = new System.Drawing.Size(770, 40);
+            this.pnlSearch.TabIndex = 24;
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.Location = new System.Drawing.Point(562, 1);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(201, 31);
+            this.btnSearch.TabIndex = 2;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // lblSearch
+            // 
+            this.lblSearch.AutoSize = true;
+            this.lblSearch.Location = new System.Drawing.Point(69, 7);
+            this.lblSearch.Name = "lblSearch";
+            this.lblSearch.Size = new System.Drawing.Size(119, 20);
+            this.lblSearch.TabIndex = 1;
+            this.lblSearch.Text = "keyword search";
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(198, 4);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(358, 26);
+            this.txtSearch.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.pnlSearch);
+            this.Controls.Add(this.pnlKeywords);
             this.Controls.Add(this.lblLotsOfInfo);
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnScanChanges);
@@ -466,6 +572,10 @@ namespace DigitalArchive
             this.pnlNewCat.ResumeLayout(false);
             this.pnlNewCat.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.epName)).EndInit();
+            this.pnlKeywords.ResumeLayout(false);
+            this.pnlKeywords.PerformLayout();
+            this.pnlSearch.ResumeLayout(false);
+            this.pnlSearch.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -509,6 +619,16 @@ namespace DigitalArchive
         private System.Windows.Forms.ToolStripMenuItem scanForChangesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scanForDuplicatesToolStripMenuItem;
         private System.Windows.Forms.Label lblLotsOfInfo;
+        private System.Windows.Forms.ToolStripMenuItem keywordsToolStripMenuItem;
+        private System.Windows.Forms.Panel pnlKeywords;
+        private System.Windows.Forms.Label lblKeywords;
+        private System.Windows.Forms.TextBox txtKeywords;
+        private System.Windows.Forms.Button btnKeywordsCancels;
+        private System.Windows.Forms.Button btnKeywords;
+        private System.Windows.Forms.Panel pnlSearch;
+        private System.Windows.Forms.Label lblSearch;
+        private System.Windows.Forms.TextBox txtSearch;
+        private System.Windows.Forms.Button btnSearch;
     }
 }
 

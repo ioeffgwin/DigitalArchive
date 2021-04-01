@@ -17,12 +17,19 @@ namespace DigitalArchive
          * return checksum of file
          * stored to check fixity of file 
          * check file exists first
-         * SHA256 returned as byte[] (stored as BLOB(32) in SQLite)
+         * SHA256 returned as byte[] (stored as string in SQLite)
          * 
          */
         public static int itemID;
         public static string Main(String filePath)
         {
+            /*
+             * J Vincent
+             * creates checksum for given file
+             * 
+             * 
+             */
+
             string checkfile = filePath;
             byte[] hashValue = default;
             string retVal = null;
@@ -128,7 +135,7 @@ namespace DigitalArchive
             }
             if (checkOK == 1) ChangeLog.Main("Checksum different: " + fileName, itemID);
             return checkOK;
-            
+
         }
 
     }

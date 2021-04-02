@@ -103,13 +103,18 @@ namespace DigitalArchive
             string sqlu = "UPDATE tblAppSystem SET LastCatalogue = '" + this.catUUID + "'; ";
             // insert tblCatsOpened
             string sqli = "INSERT INTO tblCatsOpened (catUUID, catName, catDateOpened, catPath) " +
-                "VALUES ('" + this.catUUID + "','" + this.catName + "','" + DateTime.Now + "','" + this.catPath + "');";
+                "VALUES (@catUUID, @catName, @catDate, @catPath);";
 
             using (SQLiteConnection conn = new SQLiteConnection(Globals.connApp))
             {
                 conn.Open();
                 using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu + sqli, conn))
                 {
+
+                    sql_cmd.Parameters.Add(new SQLiteParameter("@catName", this.catName));
+                    sql_cmd.Parameters.Add(new SQLiteParameter("@catUUID", this.catUUID));
+                    sql_cmd.Parameters.Add(new SQLiteParameter("@catDate", DateTime.Now));
+                    sql_cmd.Parameters.Add(new SQLiteParameter("@catPath", this.catPath));
                     sql_cmd.ExecuteNonQuery();
                 }
                 conn.Close();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
+using System.IO;
 
 
 namespace DigitalArchive
@@ -37,6 +38,10 @@ namespace DigitalArchive
             // Open the connection:
             try
             {
+                //make sure the application database is in the same directory as the exe
+                string myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                //set the global variable for the app database connection
+                Globals.connApp = "Data Source=" + myDir + "\\digarch.dacat; Version = 3; ";
                 SQLiteConnection sys_Conn = new SQLiteConnection(Globals.connApp);
                 sys_Conn.Open();
                 string sqlt = "SELECT userName FROM tblAppSystem;";

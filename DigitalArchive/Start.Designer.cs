@@ -79,6 +79,9 @@ namespace DigitalArchive
             this.btnSearch = new System.Windows.Forms.Button();
             this.lblSearch = new System.Windows.Forms.Label();
             this.txtSearch = new System.Windows.Forms.TextBox();
+            this.picViewer = new System.Windows.Forms.PictureBox();
+            this.pnlPicView = new System.Windows.Forms.Panel();
+            this.toolStripVersion = new System.Windows.Forms.ToolStripStatusLabel();
             btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -86,6 +89,8 @@ namespace DigitalArchive
             ((System.ComponentModel.ISupportInitialize)(this.epName)).BeginInit();
             this.pnlKeywords.SuspendLayout();
             this.pnlSearch.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picViewer)).BeginInit();
+            this.pnlPicView.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGetFolder
@@ -250,7 +255,8 @@ namespace DigitalArchive
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripUserName,
             this.toolStripCurCat,
-            this.toolStripMessage});
+            this.toolStripMessage,
+            this.toolStripVersion});
             this.statusStrip1.Location = new System.Drawing.Point(0, 660);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1200, 32);
@@ -298,6 +304,7 @@ namespace DigitalArchive
             this.treeViewCat.TabIndex = 17;
             this.treeViewCat.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewCat_BeforeExpand);
             this.treeViewCat.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewCat_AfterSelect);
+            this.treeViewCat.DoubleClick += new System.EventHandler(this.treeViewCat_DoubleClick);
             this.treeViewCat.Leave += new System.EventHandler(this.treeViewCat_Leave);
             // 
             // mainImageList
@@ -541,11 +548,36 @@ namespace DigitalArchive
             this.txtSearch.Size = new System.Drawing.Size(358, 26);
             this.txtSearch.TabIndex = 0;
             // 
+            // picViewer
+            // 
+            this.picViewer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picViewer.Location = new System.Drawing.Point(0, 0);
+            this.picViewer.Name = "picViewer";
+            this.picViewer.Size = new System.Drawing.Size(828, 568);
+            this.picViewer.TabIndex = 25;
+            this.picViewer.TabStop = false;
+            // 
+            // pnlPicView
+            // 
+            this.pnlPicView.Controls.Add(this.picViewer);
+            this.pnlPicView.Location = new System.Drawing.Point(349, 36);
+            this.pnlPicView.Name = "pnlPicView";
+            this.pnlPicView.Size = new System.Drawing.Size(828, 568);
+            this.pnlPicView.TabIndex = 26;
+            this.pnlPicView.Visible = false;
+            // 
+            // toolStripVersion
+            // 
+            this.toolStripVersion.Name = "toolStripVersion";
+            this.toolStripVersion.Size = new System.Drawing.Size(179, 25);
+            this.toolStripVersion.Text = "toolStripStatusLabel4";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.pnlPicView);
             this.Controls.Add(this.pnlSearch);
             this.Controls.Add(this.pnlKeywords);
             this.Controls.Add(this.lblLotsOfInfo);
@@ -576,6 +608,8 @@ namespace DigitalArchive
             this.pnlKeywords.PerformLayout();
             this.pnlSearch.ResumeLayout(false);
             this.pnlSearch.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picViewer)).EndInit();
+            this.pnlPicView.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -629,6 +663,9 @@ namespace DigitalArchive
         private System.Windows.Forms.Label lblSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.Panel pnlPicView;
+        private System.Windows.Forms.PictureBox picViewer;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripVersion;
     }
 }
 

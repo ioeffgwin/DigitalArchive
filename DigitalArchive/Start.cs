@@ -52,6 +52,9 @@ namespace DigitalArchive
             toolStripMessage.Text = "";
             toolStripCurCat.Text = "No Catalogue opened";
             this.Text = "Digital Archive";
+            //add version number to tool strip at bottom
+            string version = System.Windows.Forms.Application.ProductVersion;
+            toolStripVersion.Text = String.Format("App Version {0}", version);
             //add in code to read data from digarch.dacat
             string curCatID;
             // if no data not used before some data required
@@ -1105,6 +1108,13 @@ namespace DigitalArchive
              */
 
             //call same as keywordsToolStripMenuItem_Click
+
+        }
+
+        private void treeViewCat_DoubleClick(object sender, EventArgs e)
+        {
+            //if file is an image show the image in picView (make pnlPicView visible)
+
 
         }
     }

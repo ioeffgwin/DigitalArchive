@@ -37,28 +37,47 @@ namespace DigitalArchive
             {
                 string sqli;
                 //Update App
-                SQLiteConnection app_conn = new SQLiteConnection(Globals.connApp);
-                app_conn.Open();
+                using (SQLiteConnection app_conn = new SQLiteConnection(Globals.connApp))
+                {
 
-                sqli = "INSERT INTO tblChangeLog (logCatUUID, logItemID, logDateTime, logChangedBy, logChangeDets) " +
-                    "VALUES ('" + Globals.curCatUUID + "'," + itemID + ",'" + DateTime.Now + "','" + Globals.usersName + "','" + logUpdate + "');";
-                SQLiteCommand sql_cmd;
-                sql_cmd = app_conn.CreateCommand();
-                sql_cmd.CommandText = sqli;
-                sql_cmd.ExecuteNonQuery();
-                app_conn.Close();
+                    app_conn.Open();
+
+                    sqli = "INSERT INTO tblChangeLog (logCatUUID, logItemID, logDateTime, logChangedBy, logChangeDets) " +
+                        "VALUES (@curCatUUID, @curItemID, @curDateNow, @curUserName, @curLogUpdate);";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqli, app_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curCatUUID", Globals.curCatUUID));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curItemID", itemID));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curDateNow", DateTime.Now));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curUserName", Globals.usersName));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curLogUpdate", logUpdate));
+                        sql_cmd.ExecuteNonQuery();
+
+                    }
+                    app_conn.Close();
+                }
 
                 //Update Catalogue
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
+                using (SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat))
+                {
 
-                sqli = "INSERT INTO tblChangeLog (logItemID, logDateTime, logChangedBy, logChangeDets, logCatVersion )" +
-                    "VALUES (" + itemID + ", '" + DateTime.Now + "', '" + Globals.usersName + "', '" + logUpdate + "', '" + Globals.curCatVer + "');";
-                //sql_cmd already declared
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqli;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
+
+                    cat_conn.Open();
+
+                    sqli = "INSERT INTO tblChangeLog (logItemID, logDateTime, logChangedBy, logChangeDets, logCatVersion )" +
+                        "VALUES (@curItemID, @curDateNow, @curUserName, @curLogUpdate, @curCatVer); ";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqli, cat_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curCatUUID", Globals.curCatUUID));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curItemID", itemID));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curDateNow", DateTime.Now));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curUserName", Globals.usersName));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curLogUpdate", logUpdate));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@curCatVer", Globals.curCatVer));
+                        sql_cmd.ExecuteNonQuery();
+                    }
+                    cat_conn.Close();
+                }
 
 
 

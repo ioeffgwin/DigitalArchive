@@ -1118,6 +1118,11 @@ namespace DigitalArchive
 
 
         }
+
+        private void toolStripVersion_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 

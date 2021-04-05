@@ -53,6 +53,7 @@ namespace DigitalArchive
             this.toolStripUserName = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripCurCat = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnCancelUsersName = new System.Windows.Forms.Button();
             this.treeViewCat = new System.Windows.Forms.TreeView();
             this.mainImageList = new System.Windows.Forms.ImageList(this.components);
@@ -81,7 +82,6 @@ namespace DigitalArchive
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.picViewer = new System.Windows.Forms.PictureBox();
             this.pnlPicView = new System.Windows.Forms.Panel();
-            this.toolStripVersion = new System.Windows.Forms.ToolStripStatusLabel();
             btnGetFolder = new System.Windows.Forms.Button();
             this.mnuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -280,6 +280,13 @@ namespace DigitalArchive
             this.toolStripMessage.Name = "toolStripMessage";
             this.toolStripMessage.Size = new System.Drawing.Size(179, 25);
             this.toolStripMessage.Text = "toolStripStatusLabel3";
+            // 
+            // toolStripVersion
+            // 
+            this.toolStripVersion.Name = "toolStripVersion";
+            this.toolStripVersion.Size = new System.Drawing.Size(179, 25);
+            this.toolStripVersion.Text = "toolStripStatusLabel4";
+            this.toolStripVersion.Click += new System.EventHandler(this.toolStripVersion_Click);
             // 
             // btnCancelUsersName
             // 
@@ -565,12 +572,6 @@ namespace DigitalArchive
             this.pnlPicView.Size = new System.Drawing.Size(828, 568);
             this.pnlPicView.TabIndex = 26;
             this.pnlPicView.Visible = false;
-            // 
-            // toolStripVersion
-            // 
-            this.toolStripVersion.Name = "toolStripVersion";
-            this.toolStripVersion.Size = new System.Drawing.Size(179, 25);
-            this.toolStripVersion.Text = "toolStripStatusLabel4";
             // 
             // MainForm
             // 

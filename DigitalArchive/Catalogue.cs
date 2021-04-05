@@ -153,8 +153,6 @@ namespace DigitalArchive
                         if (File.Exists(Globals.curCatPath + filePath + "\\" + fileName) == false)
                         {
                             missingFiles.Add(fileID);
-                            //update change logs
-                            ChangeLog.Main("Missing File: " + Globals.curCatPath + filePath + "\\" + fileName, fileID);
                         }
                     }
                 }

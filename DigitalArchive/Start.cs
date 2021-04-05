@@ -478,6 +478,9 @@ namespace DigitalArchive
                         n = new TreeNode(filenames[0], 7, 7);
                         n.Tag = missingFile;
                         e.Node.Nodes.Add(n);
+                        //update change logs
+                        ChangeLog.Main("Missing File: " + Globals.curCatPath + filenames[1] + "\\" + filenames[0], missingFile);
+
                     }
                     treeViewCat.ExpandAll();
 

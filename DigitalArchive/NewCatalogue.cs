@@ -69,8 +69,9 @@ namespace DigitalArchive
                             "\r\nDigital Archive: " + catName + "\r\n\r\n" + catDesc + "\r\n" +
                             "\r\nDO NOT DELETE THE CATALOGUE FILE: " + myGuid + ".dacat " +
                             "\r\n\r\nFurther Instructions for the catalogue and application to go here:\r\n\r\n" +
-                            "=====================================================================" +
-                            "Changes to this catalogue:\r\n\r\n ");
+                            "=====================================================================\r\n\r\n" +
+                            "Changes to this catalogue:\r\n\r\n");
+                        //change log will append to this file as well as the change logs
                         //full path for catalogue
                         CatUUID = catPath + "\\DACAT\\" + myGuid + ".dacat";
                         //create cataloge and connection

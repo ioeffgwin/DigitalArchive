@@ -83,7 +83,7 @@ namespace DigitalArchive
                 string fPath = Globals.curCatPath + "\\DACAT\\" + Globals.curCatName.Replace(' ', '_') + "_ReadMe.txt";
                 if (File.Exists(fPath))
                 {
-                    File.AppendAllText(fPath, "Change: " +
+                    File.AppendAllText(fPath, "Date: " +
                         DateTime.Now.ToString() + "\t| " + Globals.usersName + "\t| ItemID: " + itemID + " - " + logUpdate + " | version: " + Globals.curCatVer + "\r\n");
 
                 }

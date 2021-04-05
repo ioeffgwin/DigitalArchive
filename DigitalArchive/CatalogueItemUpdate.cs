@@ -62,21 +62,33 @@ namespace DigitalArchive
             {
 
                 // add things to tblItems and tblItemMeta
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
-                // this needs to be the path relative to the catalogue
+                using (SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat))
+                {
 
-                //string localPath = Path.GetDirectoryName(itemPath);
+                    cat_conn.Open();
+                    // this needs to be the path relative to the catalogue
+
+                    //string localPath = Path.GetDirectoryName(itemPath);
 
 
-                string sqli = "INSERT INTO tblItems (itemAdded, itemAddedBy, itemName, itemPath, itemChecksum, itemLastChange, itemOwner,itemCopyright,itemGDPR) " +
-                    "VALUES ('" + DateTime.Now + "', '" + Globals.usersName + "', '" + itemName + "', '" + itemPath + "', '" + itemChecksum + "', " +
-                    "'" + DateTime.Now + "', '" + itemOwner + "', '" + itemCopyright + "', '" + itemGDPR + "');";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqli;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
+                    string sqli = "INSERT INTO tblItems (itemAdded, itemAddedBy, itemName, itemPath, itemChecksum, itemLastChange, itemOwner,itemCopyright,itemGDPR) " +
+                        "VALUES (@dateAdded, @addedBy, @itemName, @itemPath, @itemChecksum, " +
+                        "@itemLastChange, @itemOwner, @itemCopyright, @itemGDPR);";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqli, cat_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@dateAdded", DateTime.Now));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@addedBy", Globals.usersName));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemName", itemName));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemPath", itemPath));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemChecksum", itemChecksum));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemLastChange", DateTime.Now));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemOwner", itemOwner));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemCopyright", itemCopyright));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemGDPR", itemGDPR));
+                        sql_cmd.ExecuteNonQuery();
+                    }
+                    cat_conn.Close();
+                }
                 bAddSuccess = true;
                 //get the itemID for the new item
                 this.itemID = GetItemID(itemName, itemPath, itemChecksum);
@@ -152,16 +164,20 @@ namespace DigitalArchive
             try
             {
                 // change things in tblItems. Maybe delete, change or add in tblItemMeta
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
+                using (SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat))
+                {
 
-                string sqlu = "UPDATE tblItems SET column=value, column=value   WHERE metaID = " + itemID + ";";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqlu;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
-                bChangeSuccess = true;
+                    cat_conn.Open();
+                    string sqlu = "UPDATE tblItems SET column=value, column=value   WHERE metaID = @itemID ;";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu, cat_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemID", itemID));
+                        sql_cmd.ExecuteNonQuery();
+                        bChangeSuccess = true;
+
+                    }
+                    cat_conn.Close();
+                }
 
             }
             catch (Exception ex)
@@ -229,15 +245,20 @@ namespace DigitalArchive
             string newVersion = theDate.ToString("yyyyMMddHHmmssFFF");
             try
             {
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
-                // update tblAppSystemb(no where clause as only one line should be in use)
-                string sqlu = "UPDATE tblCatalogue SET CatVersion = '" + newVersion + "', catLastUpdate = '" + theDate + "'; ";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqlu;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
+                using (SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat))
+                {
+
+                    cat_conn.Open();
+                    // update tblAppSystemb(no where clause as only one line should be in use)
+                    string sqlu = "UPDATE tblCatalogue SET CatVersion = @newVersion, catLastUpdate = @theDate ; ";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu, cat_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@newVersion", newVersion));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@theDate", theDate));
+                        sql_cmd.ExecuteNonQuery();
+                    }
+                    cat_conn.Close();
+                }
                 Globals.curCatVer = newVersion;
 
             }

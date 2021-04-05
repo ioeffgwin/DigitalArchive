@@ -48,61 +48,75 @@ namespace DigitalArchive
                         //create DACAT folder for catalogue to sit in
                         Directory.CreateDirectory(txtFilePath.Text + "\\DACAT");
                         //create readme.txt with instructions not to delete!
-                        File.WriteAllText(txtFilePath.Text + "\\DACAT\\"+ txtCatName.Text.Replace(' ','_') + "ReadMe.txt", DateTime.Today.ToString() + "\r\nDigital Archive: " + txtCatName.Text + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
+                        File.WriteAllText(txtFilePath.Text + "\\DACAT\\" + txtCatName.Text.Replace(' ', '_') + "ReadMe.txt", DateTime.Today.ToString() + "\r\nDigital Archive: " + txtCatName.Text + "\r\nDo not delete the catalogue file " + myGuid + ".dacat ");
                         //full path for catalogue
                         CatUUID = txtFilePath.Text + "\\DACAT\\" + myGuid + ".dacat";
                         //create cataloge and connection
-                        SQLiteConnection dbConn = new SQLiteConnection("Data Source=" + CatUUID + "; Version = 3; Compress = True;");
-                        dbConn.Open();
-                        //populate the database with tables
-                        string sql = "CREATE TABLE tblCatalogue(catName       VARCHAR(120) UNIQUE NOT NULL, " +
-                               "catUUID       VARCHAR(255)  UNIQUE  NOT NULL, " +
-                               "catCreated    DATETIME          NOT NULL UNIQUE, " +
-                               "catDesc       VARCHAR(255) UNIQUE NOT NULL, " +
-                               "catVersion    VARCHAR(18)  UNIQUE NOT NULL, " +
-                               "catLastUpdate DATETIME          UNIQUE NOT NULL " +
-                               "); ";
-                        sql += "CREATE TABLE tblItems (" +
-                              "itemID INTEGER       PRIMARY KEY ASC AUTOINCREMENT NOT NULL UNIQUE, " +
-                              "itemAdded DATETIME      NOT NULL, " +
-                              "itemAddedBy    VARCHAR(50)  NOT NULL, " +
-                              "itemName       VARCHAR(255) NOT NULL, " +
-                              "itemPath       VARCHAR(255) NOT NULL, " +
-                              "itemChecksum   VARCHAR(150) NOT NULL, " +
-                              "itemLastChange DATETIME NOT NULL, " +
-                              "itemOwner      VARCHAR(128), " +
-                              "itemCopyright  BOOLEAN NOT NULL DEFAULT(0), " +
-                              "itemGDPR       BOOLEAN NOT NULL DEFAULT(0) " +
-                              ");   ";
-                        sql += "CREATE TABLE tbllkpMetaFormat(metaTitle VARCHAR(255) UNIQUE PRIMARY KEY ASC);";
-                        sql += "CREATE TABLE tblItemMeta(metaID     INTEGER       PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
-                              "itemID     INTEGER       REFERENCES tblItems(itemID) NOT NULL, " +
-                              "metaOrig   BOOLEAN       NOT NULL DEFAULT(0), " +
-                              "metaTitle  VARCHAR(255) NOT NULL REFERENCES tbllkpMetaFormat(metaTitle), " +
-                              "metaFormat VARCHAR(50)  NOT NULL, " +
-                              "metaData   VARCHAR(255) NOT NULL " +
-                              "); ";
-                        sql += "CREATE TABLE tblChangeLog ( " +
-                            "logID INTEGER        PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
-                            "logItemID INTEGER        NOT NULL, " +
-                            "logDateTime   DATETIME NOT NULL, " +
-                            "logChangedBy VARCHAR(15)  NOT NULL, " +
-                            "logChangeDets VARCHAR(1024) NOT NULL, " +
-                            "logCatVersion VARCHAR(16)   NOT NULL " +
-                            "); ";
-                        SQLiteCommand command = new SQLiteCommand(sql, dbConn);
-                        command.ExecuteNonQuery();
-                        //Insert startup information into tables
-                        sql = "INSERT INTO tblCatalogue VALUES ('" + txtCatName.Text +
-                            "', '" + CatUUID + "', '" + DateTime.Now +
-                            "', '" + txtCatDesc.Text + "', '1.0', '" + DateTime.Now + "'); ";
-                        //these are the types of Metadata we want to store (keywords can be added)
-                        sql += "INSERT INTO tbllkpMetaFormat (metaTitle)" +
-                            "VALUES ('TYPE OF FILE'), ('NAME'), ('SIZE'), ('CREATED'), ('MODIFIED'), ('READ ONLY'), ('LOCATION'), " +
-                            "('READ-ONLY'), ('HIDDEN'), ('DATE TAKEN'), ('KEYWORDS');";
-                        command = new SQLiteCommand(sql, dbConn);
-                        command.ExecuteNonQuery();
-                        dbConn.Close();
+                        using (SQLiteConnection dbConn = new SQLiteConnection("Data Source=" + CatUUID + "; Version = 3; Compress = True;"))
+                        {
+
+                            dbConn.Open();
+                            //populate the database with tables
+                            string sql = "CREATE TABLE tblCatalogue(catName       VARCHAR(120) UNIQUE NOT NULL, " +
+                                   "catUUID       VARCHAR(255)  UNIQUE  NOT NULL, " +
+                                   "catCreated    DATETIME          NOT NULL UNIQUE, " +
+                                   "catDesc       VARCHAR(255) UNIQUE NOT NULL, " +
+                                   "catVersion    VARCHAR(18)  UNIQUE NOT NULL, " +
+                                   "catLastUpdate DATETIME          UNIQUE NOT NULL " +
+                                   "); ";
+                            sql += "CREATE TABLE tblItems (" +
+                                  "itemID INTEGER       PRIMARY KEY ASC AUTOINCREMENT NOT NULL UNIQUE, " +
+                                  "itemAdded DATETIME      NOT NULL, " +
+                                  "itemAddedBy    VARCHAR(50)  NOT NULL, " +
+                                  "itemName       VARCHAR(255) NOT NULL, " +
+                                  "itemPath       VARCHAR(255) NOT NULL, " +
+                                  "itemChecksum   VARCHAR(150) NOT NULL, " +
+                                  "itemLastChange DATETIME NOT NULL, " +
+                                  "itemOwner      VARCHAR(128), " +
+                                  "itemCopyright  BOOLEAN NOT NULL DEFAULT(0), " +
+                                  "itemGDPR       BOOLEAN NOT NULL DEFAULT(0) " +
+                                  ");   ";
+                            sql += "CREATE TABLE tbllkpMetaFormat(metaTitle VARCHAR(255) UNIQUE PRIMARY KEY ASC);";
+                            sql += "CREATE TABLE tblItemMeta(metaID     INTEGER       PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
+                                  "itemID     INTEGER       REFERENCES tblItems(itemID) NOT NULL, " +
+                                  "metaOrig   BOOLEAN       NOT NULL DEFAULT(0), " +
+                                  "metaTitle  VARCHAR(255) NOT NULL REFERENCES tbllkpMetaFormat(metaTitle), " +
+                                  "metaFormat VARCHAR(50)  NOT NULL, " +
+                                  "metaData   VARCHAR(255) NOT NULL " +
+                                  "); ";
+                            sql += "CREATE TABLE tblChangeLog ( " +
+                                "logID INTEGER        PRIMARY KEY ASC AUTOINCREMENT UNIQUE NOT NULL, " +
+                                "logItemID INTEGER        NOT NULL, " +
+                                "logDateTime   DATETIME NOT NULL, " +
+                                "logChangedBy VARCHAR(15)  NOT NULL, " +
+                                "logChangeDets VARCHAR(1024) NOT NULL, " +
+                                "logCatVersion VARCHAR(16)   NOT NULL " +
+                                "); ";
+                            using (SQLiteCommand command = new SQLiteCommand(sql, dbConn))
+                            {
+                                command.ExecuteNonQuery();
+
+                            }
+                            //Insert startup information into tables
+                            sql = "INSERT INTO tblCatalogue VALUES (@catName, " +
+                                "@catUUID, @catCreated, @catDesc, @catVer, @catAmended);";
+                            //these are the types of Metadata we want to store (keywords can be added)
+                            sql += "INSERT INTO tbllkpMetaFormat (metaTitle)" +
+                                "VALUES ('TYPE OF FILE'), ('NAME'), ('SIZE'), ('CREATED'), ('MODIFIED'), ('READ ONLY'), ('LOCATION'), " +
+                                "('READ-ONLY'), ('HIDDEN'), ('DATE TAKEN'), ('KEYWORDS');";
+                            using (SQLiteCommand command = new SQLiteCommand(sql, dbConn))
+                            {
+                                command.Parameters.Add(new SQLiteParameter("@catName", txtCatName.Text));
+                                command.Parameters.Add(new SQLiteParameter("@catUUID", CatUUID));
+                                command.Parameters.Add(new SQLiteParameter("@catCreated", DateTime.Now));
+                                command.Parameters.Add(new SQLiteParameter("@catDesc", txtCatDesc.Text));
+                                command.Parameters.Add(new SQLiteParameter("@catVer", "1.0"));
+                                command.Parameters.Add(new SQLiteParameter("@catAmended", DateTime.Now));
+
+                                command.ExecuteNonQuery();
+                            }
+                            dbConn.Close();
+                        }
                         // add data to digarch.dacat to update with latest catalogue
                         Catalogue curCat = new Catalogue(CatUUID);
 
@@ -110,7 +124,7 @@ namespace DigitalArchive
                         lblGuid.Text = "Catalogue " + curCat.catUUID + " has been created";
 
                         //MainForm.LabelCurrentCat = "Current Catalogue: " + Globals.curCatName;
-                        
+
                         //close form
                         this.Close();
                     }

@@ -48,17 +48,25 @@ namespace DigitalArchive
             {
                 // add things  tblItemMeta
 
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
+                using (SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat))
+                {
 
-                string sqli = "INSERT INTO tblItemMeta (itemID, metaOrig, metaTitle, metaFormat, metaData) " +
-                    "VALUES (" + itemID + ", '" + metaOrig + "', '" + metaTitle + "', '" + metaFormat + "', '" + metaData + "'); ";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqli;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
-                bAddSuccess = true;
+                    cat_conn.Open();
+                    string sqli = "INSERT INTO tblItemMeta (itemID, metaOrig, metaTitle, metaFormat, metaData) " +
+                        "VALUES (@itemID, @metaOrig, @metaTitle, @metaFormat, @metaData); ";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqli, cat_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@itemID", itemID));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@metaOrig", metaOrig));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@metaTitle", metaTitle));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@metaFormat", metaFormat));
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@metaData", metaData));
+
+                        sql_cmd.ExecuteNonQuery();
+                        bAddSuccess = true;
+                    }
+                    cat_conn.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -89,16 +97,19 @@ namespace DigitalArchive
             try
             {
                 //change things in tblItemMeta
-                SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat);
-                cat_conn.Open();
-
-                string sqlu = "UPDATE tblItemMeta SET column=value, column=value   WHERE metaID = " + metaID + ";";
-                SQLiteCommand sql_cmd;
-                sql_cmd = cat_conn.CreateCommand();
-                sql_cmd.CommandText = sqlu;
-                sql_cmd.ExecuteNonQuery();
-                cat_conn.Close();
-                bChangeSuccess = true;
+                using (SQLiteConnection cat_conn = new SQLiteConnection(Globals.connCat))
+                {
+                    cat_conn.Open();
+                    string sqlu = "UPDATE tblItemMeta SET column=value, column=value   WHERE metaID = @metaID ;";
+                    using (SQLiteCommand sql_cmd = new SQLiteCommand(sqlu, cat_conn))
+                    {
+                        sql_cmd.Parameters.Add(new SQLiteParameter("@metaID", metaID));
+                        //sql_cmd.Parameters.Add(new SQLiteParameter("@metavalue", value));
+                        sql_cmd.ExecuteNonQuery();
+                    }
+                    cat_conn.Close();
+                    bChangeSuccess = true;
+                }
 
             }
             catch (Exception ex)

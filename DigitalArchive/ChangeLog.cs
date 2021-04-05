@@ -79,6 +79,14 @@ namespace DigitalArchive
                     cat_conn.Close();
                 }
 
+                //update the readme.txt with changes
+                string fPath = Globals.curCatPath + "\\DACAT\\" + Globals.curCatName.Replace(' ', '_') + "_ReadMe.txt";
+                if (File.Exists(fPath))
+                {
+                    File.AppendAllText(fPath, "Change: " +
+                        DateTime.Now.ToString() + "\t| " + Globals.usersName + "\t| ItemID: " + itemID + " - " + logUpdate + " | version: " + Globals.curCatVer + "\r\n");
+
+                }
 
 
             }

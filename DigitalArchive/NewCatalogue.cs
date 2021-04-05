@@ -68,7 +68,9 @@ namespace DigitalArchive
                         File.WriteAllText(catPath + "\\DACAT\\" + catName.Replace(' ', '_') + "_ReadMe.txt", DateTime.Now.ToString() +
                             "\r\nDigital Archive: " + catName + "\r\n\r\n" + catDesc + "\r\n" +
                             "\r\nDO NOT DELETE THE CATALOGUE FILE: " + myGuid + ".dacat " +
-                            "\r\n\r\nFurther Instructions for the catalogue and application to go here:");
+                            "\r\n\r\nFurther Instructions for the catalogue and application to go here:\r\n\r\n" +
+                            "=====================================================================" +
+                            "Changes to this catalogue:\r\n\r\n ");
                         //full path for catalogue
                         CatUUID = catPath + "\\DACAT\\" + myGuid + ".dacat";
                         //create cataloge and connection

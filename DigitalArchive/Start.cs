@@ -960,7 +960,8 @@ namespace DigitalArchive
             {
 
                 fileInfo.GetFileInfo(nodeSub.FullPath);
-                int alreadyHere = CheckSum.CheckCheckSum(fileInfo.fileLocation, fileInfo.fileName);
+                //need to pass full path including actual location so add globals.curcatpath
+                int alreadyHere = CheckSum.CheckCheckSum(Globals.curCatPath + fileInfo.fileLocation, fileInfo.fileName);
                 if ((fileInfo.fileSystem == false && fileInfo.fileDir == false && alreadyHere == 0))
                 {
                     if (fileInfo.fileName != null)

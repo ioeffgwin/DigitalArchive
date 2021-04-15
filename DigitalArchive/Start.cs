@@ -54,7 +54,7 @@ namespace DigitalArchive
             this.Text = "Digital Archive";
             //add version number to tool strip at bottom
             string version = System.Windows.Forms.Application.ProductVersion;
-            //toolStripVersion.Text = String.Format("App Version {0}", version); // shows current app version
+            toolStripVersion.Text = String.Format("App Version {0}", version); // shows current app version
 
             //add in code to read data from digarch.dacat
             string curCatID;

@@ -55,7 +55,7 @@ namespace DigitalArchive
             //add version number to tool strip at bottom
             string version = System.Windows.Forms.Application.ProductVersion;
             //toolStripVersion.Text = String.Format("App Version {0}", version); // shows current app version
-            toolStripVersion.Text = "Catalogue Ver: " + Globals.curCatVer; //or show current catalogue version
+
             //add in code to read data from digarch.dacat
             string curCatID;
             // if no data not used before some data required
@@ -988,6 +988,7 @@ namespace DigitalArchive
                         if (fileInfo.fileMetaKeyword != null) intoCat.AddMetaItem(myItemID, true, "KEYWORDS", "string", fileInfo.fileMetaKeyword);
                         //update catalogue latest version
                         intoCat.SetCatalogueVer();
+                        toolStripVersion.Text = "Cat ver: " + Globals.curCatVer;
                         //update change log
                         ChangeLog.Main("New File Added: " + fileInfo.fileName, myItemID);
                         filesUpdated++;

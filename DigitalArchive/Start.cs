@@ -74,6 +74,7 @@ namespace DigitalArchive
             {
                 Catalogue curCat = new Catalogue(curCatID);
                 toolStripCurCat.Text = "Current Catalogue: " + Globals.curCatName;
+                toolStripVersion.Text = "Cat ver: " + Globals.curCatVer;
                 this.Text = "Digital Archive " + Globals.curCatName;
                 if (Globals.curCatDesc != null)
                 {

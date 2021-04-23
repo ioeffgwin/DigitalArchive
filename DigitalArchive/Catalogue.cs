@@ -166,6 +166,7 @@ namespace DigitalArchive
         }
         public static string[] GetFileName(int itemID)
         {
+            //Returns string array with item name and item path from catalogue database
             string[] fName = new string[2];
             //go through tblItems check if exist as real file
             string sql = "SELECT itemName, itemPath FROM tblItems WHERE itemID =" + itemID + ";";
